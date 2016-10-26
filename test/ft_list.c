@@ -40,6 +40,7 @@ int	main (int argc, char **argv)
 			printf ("\e[34m%s\n", line->d_name);
 		}
 		(void)closedir(dir);
+		printf ("\e[0m");
 	}
 	return 0;
 }
