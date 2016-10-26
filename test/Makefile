@@ -23,3 +23,12 @@ inspect_file:
 
 list:
 	gcc $(FLAGS) -o $@ $(src_list)
+
+clean:
+
+fclean:
+	rm -f inspect_file list
+ 
+re: fclean
+	$(MAKE) all
+

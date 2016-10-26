@@ -13,6 +13,7 @@
 #include <dirent.h>
 #include <errno.h>
 #include <stdio.h>
+#include <string.h>
 
 int	main (int argc, char **argv)
 {
@@ -25,19 +26,18 @@ int	main (int argc, char **argv)
 
 	if (dir == NULL)
 	{
-		printf ("%s\n", strerror_r(errno));
+		printf ("\e[41m\e[32m\e[1m%s\n", strerror(errno));
 		return -1;
 	}
 	else
 	{
-		printf ("Inode\tLength\tType\tName\n");
+		printf ("\e[1m\e[4m\e[31mInode\t\e[32mLength\t\e[33mType\t\e[34mName\n");
 		while ((line = readdir(dir)) != NULL)
 		{
-			printf ("%lu\t", line->d_ino);
-			printf ("%u\t", line->d_reclen);
-			printf ("%u\t", line->d_type);
-			printf ("%s", line->d_name);
-			printf ("\n");
+			printf ("\e[0m\e[31m%llu\t", (unsigned long long)line->d_ino);
+			printf ("\e[32m%u\t", line->d_reclen);
+			printf ("\e[33m%u\t", line->d_type);
+			printf ("\e[34m%s\n", line->d_name);
 		}
 		(void)closedir(dir);
 	}
