@@ -27,7 +27,7 @@ int	main (int argc, char **argv)
 	if (dir == NULL)
 	{
 		printf ("\e[41m\e[32m\e[1m%s\n", strerror(errno));
-		return -1;
+		return errno;
 	}
 	else
 	{
