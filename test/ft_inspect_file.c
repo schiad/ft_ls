@@ -10,6 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <pwd.h>
 #include <time.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -28,7 +29,9 @@ int	main (int argc, char **argv)
 	else
 	{
 		struct stat buf;
+		struct passwd *usr;
 		stat(argv[1], &buf);
+		usr = getpwuid(buf.st_uid);
 		printf("\e[91mID dev. Minor: %d\n", minor(buf.st_dev));
 		printf("\e[92mID dev. Major: %d\n", major(buf.st_dev));
 		printf("\e[93mINODE: %ld\n", buf.st_ino);
@@ -55,6 +58,8 @@ int	main (int argc, char **argv)
 		printf("\e[95mLast status change: %s", ctime(&buf.st_ctime));
 		printf("\e[96mLast file access: %s", ctime(&buf.st_atime));
 		printf("\e[91mLast file modification: %s", ctime(&buf.st_mtime));
+		printf("User = %s\n", usr->pw_name);
+		printf("Groupe = %s\n", usr->pw_passwd);
 		printf("\e[0m");
 	}
 	return 0;	
