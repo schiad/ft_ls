@@ -6,7 +6,7 @@
 /*   By: schiad <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/21 19:17:03 by schiad            #+#    #+#             */
-/*   Updated: 2016/10/29 16:22:50 by schiad           ###   ########.fr       */
+/*   Updated: 2016/10/29 17:37:23 by schiad           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ int	main (int argc, char **argv)
 	}
 	else
 	{
+		char linkname[1024];
 		struct stat buf;
 		struct passwd *usr;
 		struct group *grp;
@@ -67,6 +68,11 @@ int	main (int argc, char **argv)
 		printf("Groupe = %s\n", grp->gr_name);
 		printf("Permissions: ");
 		printperms(buf.st_mode);
+		if ((buf.st_mode & S_IFMT) == S_IFLNK)
+		{
+			readlink(argv[1], linkname, 1024);
+			printf("%s -> %s\n", argv[1], linkname);
+		}
 		printf("\e[0m");
 	}
 	return 0;	
