@@ -6,7 +6,7 @@
 /*   By: schiad <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/21 19:17:03 by schiad            #+#    #+#             */
-/*   Updated: 2016/10/29 16:17:54 by schiad           ###   ########.fr       */
+/*   Updated: 2016/10/29 16:22:50 by schiad           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ int	main (int argc, char **argv)
 		struct stat buf;
 		struct passwd *usr;
 		struct group *grp;
-		stat(argv[1], &buf);
+		lstat(argv[1], &buf);
 		usr = getpwuid(buf.st_uid);
 		grp = getgrgid(buf.st_gid);
 		printf("\e[91mID dev. Minor: %d\n", minor(buf.st_dev));
