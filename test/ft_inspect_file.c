@@ -6,7 +6,7 @@
 /*   By: schiad <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/21 19:17:03 by schiad            #+#    #+#             */
-/*   Updated: 2016/10/21 19:17:04 by schiad           ###   ########.fr       */
+/*   Updated: 2016/10/29 14:53:01 by schiad           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ int	main (int argc, char **argv)
 		grp = getgrgid(buf.st_gid);
 		printf("\e[91mID dev. Minor: %d\n", minor(buf.st_dev));
 		printf("\e[92mID dev. Major: %d\n", major(buf.st_dev));
-		printf("\e[93mINODE: %ld\n", buf.st_ino);
+		printf("\e[93mINODE: %llu\n", (long long)buf.st_ino);
 		printf("\e[94mType: ");
 
 		switch (buf.st_mode & S_IFMT)
