@@ -6,7 +6,7 @@
 /*   By: schiad <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/10/21 19:17:03 by schiad            #+#    #+#             */
-/*   Updated: 2016/10/29 15:07:09 by schiad           ###   ########.fr       */
+/*   Updated: 2016/10/29 16:17:54 by schiad           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,46 +20,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-void	printperms(mode_t mode)
-{
-	if (mode & S_IRUSR)
-		printf("r");
-	else
-		printf("-");
-	if (mode & S_IWUSR)
-		printf("w");
-	else
-		printf("-");
-	if (mode & S_IXUSR)
-		printf("x");
-	else
-		printf("-");
-	if (mode & S_IRGRP)
-		printf("r");
-	else
-		printf("-");
-	if (mode & S_IWGRP)
-		printf("w");
-	else
-		printf("-");
-	if (mode & S_IXGRP)
-		printf("x");
-	else
-		printf("-");
-	if (mode & S_IROTH)
-		printf("r");
-	else
-		printf("-");
-	if (mode & S_IWOTH)
-		printf("w");
-	else
-		printf("-");
-	if (mode & S_IXOTH)
-		printf("x");
-	else
-		printf("-");
-	printf("\n");
-}
+void	printperms(mode_t mode);
 
 int	main (int argc, char **argv)
 {
@@ -109,4 +70,45 @@ int	main (int argc, char **argv)
 		printf("\e[0m");
 	}
 	return 0;	
+}
+
+void	printperms(mode_t mode)
+{
+	if (mode & S_IRUSR)
+		printf("r");
+	else
+		printf("-");
+	if (mode & S_IWUSR)
+		printf("w");
+	else
+		printf("-");
+	if (mode & S_IXUSR)
+		printf("x");
+	else
+		printf("-");
+	if (mode & S_IRGRP)
+		printf("r");
+	else
+		printf("-");
+	if (mode & S_IWGRP)
+		printf("w");
+	else
+		printf("-");
+	if (mode & S_IXGRP)
+		printf("x");
+	else
+		printf("-");
+	if (mode & S_IROTH)
+		printf("r");
+	else
+		printf("-");
+	if (mode & S_IWOTH)
+		printf("w");
+	else
+		printf("-");
+	if (mode & S_IXOTH)
+		printf("x");
+	else
+		printf("-");
+	printf("\n");
 }
