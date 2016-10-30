@@ -93,9 +93,19 @@ void	printperms(mode_t mode)
 	else
 		printf("-");
 	if (mode & S_IXUSR)
-		printf("x");
+	{
+		if (mode & S_ISUID)
+			printf("s");
+		else
+			printf("x");
+	}
 	else
-		printf("-");
+	{
+		if (mode & S_ISUID)
+			printf("S");
+		else
+			printf("-");
+	}
 	if (mode & S_IRGRP)
 		printf("r");
 	else
@@ -105,9 +115,19 @@ void	printperms(mode_t mode)
 	else
 		printf("-");
 	if (mode & S_IXGRP)
-		printf("x");
+	{
+		if (mode & S_ISGID)
+			printf("s");
+		else
+			printf("x");
+	}
 	else
-		printf("-");
+	{
+		if (mode & S_ISGID)
+			printf("S");
+		else
+			printf("-");
+	}
 	if (mode & S_IROTH)
 		printf("r");
 	else
@@ -117,8 +137,18 @@ void	printperms(mode_t mode)
 	else
 		printf("-");
 	if (mode & S_IXOTH)
-		printf("x");
+	{
+		if (mode & S_ISVTX)
+			printf("t");
+		else
+			printf("x");
+	}
 	else
-		printf("-");
+	{
+		if (mode & S_ISVTX)
+			printf("T");
+		else
+			printf("-");
+	}
 	printf("\n");
 }
