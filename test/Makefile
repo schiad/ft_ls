@@ -16,7 +16,12 @@ FLAGS = -Wall -Wextra -Werror
 
 src_inspect_file = ft_inspect_file.c
 
+src_ls = ls.c
+
 src_list = ft_list.c
+
+ls:
+	gcc $(FLAGS) -o $@ $(src_ls)
 
 inspect_file:
 	gcc $(FLAGS) -o $@ $(src_inspect_file)
