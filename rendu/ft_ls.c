@@ -6,89 +6,108 @@
 
 int	main(int argc, char **argv)
 {
-		//	ft_putstr_fd("main\n\0", 2);
-		if (argc != 2)
-				ft_list(".");
-		else
-				ft_list(argv[1]);
+	if (argc != 2)
+		ft_list(".");
+	else
+		ft_list(argv[1]);
 }
 
-t_file	*ft_lstfadd(t_file *input, struct dirent *file)
+t_file	*ft_lstfadd(t_file *input, struct dirent *file, char *path)
 {
-		//	ft_putstr_fd("lstfadd\n", 2);
-		t_file	*tmp;
-		//	ft_putstr_fd("lstfadd\n", 2);
-		if (!input)
+	t_file	*tmp;
+	if (!input)
+	{
+		if (!(tmp = (t_file *)malloc(sizeof(t_file) + 1)))
+			return ((void *)NULL);
+		tmp->name = file;
+		tmp->path = path;
+		tmp->next = NULL;
+		return tmp;
+	}
+	else
+	{
+		tmp = input;
+		while (tmp->next)
 		{
-				//		ft_putstr_fd("if1\n", 2);
-				if (!(tmp = (t_file *)malloc(sizeof(t_file) + 1)))
-						return ((void *)NULL);
-				//		ft_putstr_fd("end malloc\n", 2);
-				tmp->name = file;
-				tmp->next = NULL;
-				return tmp;
+			tmp = tmp->next;
 		}
-		else
-		{
-				tmp = input;
-				while (tmp->next)
-				{
-						tmp = (t_file *)tmp->next;
-				}
-				tmp->next = ft_lstfadd(NULL, file);
-		}
-		return input;
+		tmp->next = ft_lstfadd(NULL, file, path);
+	}
+	return input;
 }
 
-void	ft_list(char *path)
+int	ft_list(char *path)
 {
-		//	ft_putstr_fd("ft_list\n", 2);
-		t_file			*files;
-		DIR				*dir;
-		t_file			*tmp;
-		struct	dirent	*tmp2;
+	t_file			*files;
+	DIR				*dir;
+	t_file			*doss;
+	t_file			*tmp;
+	struct	dirent	*tmp2;
 
-		files = NULL;
+	files	= NULL;
+	doss	= NULL;
 
-		dir = opendir(path);
-		while ((tmp2 = readdir(dir)) != NULL)
+	ft_putstr("\n\n");
+	ft_putstr(path);
+	ft_putstr(":\n");
+
+	dir = opendir(path);
+	if (dir == NULL)
+	{
+		ft_putstr(strerror(errno));
+		ft_putstr("\n");
+		return errno;
+	}
+	while ((tmp2 = readdir(dir)) != NULL)
+	{
+		files = ft_lstfadd(files, tmp2, path);
+	}
+	tmp = files;
+	while (tmp)
+	{
+		ft_insp_file(tmp);
+		switch (tmp->prop->st_mode & S_IFMT)
 		{
-				files = ft_lstfadd(files, tmp2);
+			case S_IFBLK:	ft_putstr("block device");		break;
+			case S_IFCHR:	ft_putstr("character device");	break;
+			case S_IFDIR:	
+				ft_putstr("directory");
+				if (!ft_strequ(tmp->name->d_name, "..") && !ft_strequ(tmp->name->d_name, "."))
+					doss = ft_lstfadd(doss, tmp->name, path);
+				break;
+			case S_IFIFO:	ft_putstr("FIFO/pipe");			break;
+			case S_IFLNK:	ft_putstr("symlink");			break;
+			case S_IFREG:	ft_putstr("regular file");		break;
+			case S_IFSOCK:	ft_putstr("socket");			break;
+			default:		ft_putstr("unknown?");
 		}
-		tmp = files;
-		while (tmp)
-		{
-				ft_putstr(tmp->name->d_name);
-				ft_insp_file(tmp);
-				ft_putstr("insp\n");
-				ft_putstr("insp\n");
-				switch (tmp->prop->st_mode & S_IFMT)
-				{
-						case S_IFBLK:	ft_putstr("block device\n");		break;
-						case S_IFCHR:	ft_putstr("character device\n");	break;
-						case S_IFDIR:	ft_putstr("directory\n");			break;
-						case S_IFIFO:	ft_putstr("FIFO/pipe\n");			break;
-						case S_IFLNK:	ft_putstr("symlink\n");			break;
-						case S_IFREG:	ft_putstr("regular file\n");		break;
-						case S_IFSOCK:	ft_putstr("socket\n");				break;
-						default:		ft_putstr("unknown?");
-				}
-				ft_putstr("\n");
-				tmp = tmp->next;
-		}
-
+		ft_putstr("\t");
+		ft_putstr(tmp->name->d_name);
+		ft_putstr("\n");
+		tmp = tmp->next;
+	}
+	closedir(dir);
+	while (doss)
+	{
+		if (ft_strlen(doss->name->d_name))
+			ft_list(ft_strjoin(path, ft_strjoin("/", doss->name->d_name)));
+		doss = doss->next;
+	}
 }
 
 void	ft_insp_file(t_file *file)
 {
-		struct stat *tmp;
+	char *tmp;
+	char *pathfile;
 
-		tmp = file->prop;
-		tmp = (struct stat *)malloc(sizeof(struct stat) + 1);
-		if (lstat(file->name->d_name, tmp) < 0)
-		{
-			ft_putstr("\e[41m");
-			ft_putstr("error = ");
-			ft_putstr(strerror(errno));
-		}
+	tmp = ft_strjoin(file->path, "/");
+	pathfile = ft_strjoin(tmp, file->name->d_name);
+	file->prop = (struct stat *)malloc(sizeof(struct stat) + 1);
+	if (lstat(pathfile, file->prop) < 0)
+	{
+		ft_putstr("\e[41m");
+		ft_putstr("error = ");
+		ft_putstr(strerror(errno));
+		ft_putstr("\e[0m");
+	}
 }
