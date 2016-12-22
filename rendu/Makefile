@@ -1,12 +1,21 @@
 
-NAME = ft_ls
+NAME	= ft_ls
 
-all: $(NAME)
+LIBFT	= ./libft/libft.a
+
+all: libft $(NAME)
 
 $(NAME):
-	gcc ft_ls.c -o $(NAME) -I libft/includes -Llibft -lft
+	gcc ft_ls.c -o $(NAME) -I./libft/includes -L./libft -lft
+
+libft: $(LIBFT)
+
+$(LIBFT):
+	echo "Complie LIBFT"
+	make -C ./libft
 
 fclean:
 	rm -f $(NAME)
+	make fclean -C ./libft
 
 re: fclean all

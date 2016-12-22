@@ -2,9 +2,11 @@
 #include "ft_ls.h"
 #include "./libft/includes/libft.h"
 
+#define DEBUG 1
+
 int	main(int argc, char **argv)
 {
-	ft_putstr_fd("main\n", 2);
+	ft_putstr_fd("\0", 2);
 	if (argc != 2)
 		ft_list(".");
 	else
@@ -13,7 +15,7 @@ int	main(int argc, char **argv)
 
 t_file	*ft_lstfadd(t_file *input, struct dirent *file)
 {
-	ft_putstr_fd("lstfadd\n", 2);
+//	ft_putstr_fd("lstfadd\n", 2);
 	t_file	*tmp;
 	if (!input)
 	{
@@ -37,7 +39,7 @@ t_file	*ft_lstfadd(t_file *input, struct dirent *file)
 
 void	ft_list(char *path)
 {
-	ft_putstr_fd("ft_list\n", 2);
+//	ft_putstr_fd("ft_list\n", 2);
 	struct	s_file	*files;
 	DIR				*dir;
 	t_file			*tmp;
@@ -53,6 +55,7 @@ void	ft_list(char *path)
 	{
 		ft_putstr(tmp->name->d_name);
 		ft_putstr("\n");
+		ft_insp_file(tmp);
 		tmp = tmp->next;
 	}
 
@@ -60,4 +63,5 @@ void	ft_list(char *path)
 
 void	ft_insp_file(t_file *file)
 {
+	
 }

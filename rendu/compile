@@ -1,1 +1,0 @@
-gcc ft_ls.c -o ft_ls -I libft/includes -Llibft -lft
