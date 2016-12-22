@@ -21,7 +21,7 @@ typedef	struct	s_file
 {
 	struct	stat	*prop;
 	struct	dirent	*name;
-	struct	t_file	*next;
+	struct	s_file	*next;
 }				t_file;
 
 t_file  *ft_lstfadd(t_file *input, struct dirent *file);
