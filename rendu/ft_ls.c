@@ -17,7 +17,7 @@ t_file	*ft_lstfadd(t_file *input, struct dirent *file, char *path)
 	t_file	*tmp;
 	if (!input)
 	{
-		if (!(tmp = (t_file *)malloc(sizeof(t_file) + 1)))
+		if (!(tmp = (t_file *)malloc(sizeof(t_file))))
 			return ((void *)NULL);
 		tmp->name = file;
 		tmp->path = path;
