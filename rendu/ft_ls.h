@@ -22,6 +22,7 @@ typedef	struct	s_file
 	struct	stat	*prop;
 	struct	dirent	*name;
 	struct	s_file	*next;
+	int				doss;
 	char			*path;
 }				t_file;
 

@@ -21,6 +21,7 @@ t_file	*ft_lstfadd(t_file *input, struct dirent *file, char *path)
 			return ((void *)NULL);
 		tmp->name = file;
 		tmp->path = path;
+		tmp->doss = 0;
 		tmp->next = NULL;
 		return tmp;
 	}
@@ -40,12 +41,10 @@ int	ft_list(char *path)
 {
 	t_file			*files;
 	DIR				*dir;
-	t_file			*doss;
 	t_file			*tmp;
 	struct	dirent	*tmp2;
 
 	files	= NULL;
-	doss	= NULL;
 
 	ft_putstr("\n\n");
 	ft_putstr(path);
@@ -72,8 +71,8 @@ int	ft_list(char *path)
 			case S_IFCHR:	ft_putstr("character device");	break;
 			case S_IFDIR:	
 				ft_putstr("directory");
-				if (!ft_strequ(tmp->name->d_name, "..") && !ft_strequ(tmp->name->d_name, "."))
-					doss = ft_lstfadd(doss, tmp->name, path);
+				if ((ft_strequ(tmp->name->d_name, "..") == 0) && (ft_strequ(tmp->name->d_name, ".") == 0))
+					tmp->doss = 1;
 				break;
 			case S_IFIFO:	ft_putstr("FIFO/pipe");			break;
 			case S_IFLNK:	ft_putstr("symlink");			break;
@@ -86,13 +85,17 @@ int	ft_list(char *path)
 		ft_putstr("\n");
 		tmp = tmp->next;
 	}
-	closedir(dir);
-	while (doss)
+	tmp = files;
+	while (tmp)
 	{
-		if (ft_strlen(doss->name->d_name))
-			ft_list(ft_strjoin(path, ft_strjoin("/", doss->name->d_name)));
-		doss = doss->next;
+		if (tmp->doss)
+		{
+			if (ft_strlen(tmp->name->d_name))
+				ft_list(ft_strjoin(path, ft_strjoin("/", tmp->name->d_name)));
+		}
+		tmp = tmp->next;
 	}
+	closedir(dir);
 }
 
 void	ft_insp_file(t_file *file)
@@ -102,7 +105,7 @@ void	ft_insp_file(t_file *file)
 
 	tmp = ft_strjoin(file->path, "/");
 	pathfile = ft_strjoin(tmp, file->name->d_name);
-	file->prop = (struct stat *)malloc(sizeof(struct stat) + 1);
+	file->prop = (struct stat *)malloc(sizeof(struct stat));
 	if (lstat(pathfile, file->prop) < 0)
 	{
 		ft_putstr("\e[41m");
