@@ -46,7 +46,6 @@ int	ft_list(char *path)
 
 	files	= NULL;
 
-	ft_putstr("\n\n");
 	ft_putstr(path);
 	ft_putstr(":\n");
 
@@ -91,7 +90,10 @@ int	ft_list(char *path)
 		if (tmp->doss)
 		{
 			if (ft_strlen(tmp->name->d_name))
+			{
+				ft_putstr("\n");
 				ft_list(ft_strjoin(path, ft_strjoin("/", tmp->name->d_name)));
+			}
 		}
 		tmp = tmp->next;
 	}
