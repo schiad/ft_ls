@@ -15,6 +15,7 @@ $(LIBFT):
 	make -C ./libft
 
 fclean:
+	make fclean -C ./libft
 	rm -f $(NAME)
 
 re: fclean all
