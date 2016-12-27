@@ -2,14 +2,43 @@
 #include "ft_ls.h"
 #include "./libft/includes/libft.h"
 
-#define DEBUG 1
-
 int	main(int argc, char **argv)
 {
 	if (argc != 2)
 		ft_list(".");
 	else
 		ft_list(argv[1]);
+}
+
+char	*ft_path_join(const char *str1, const char *str2)
+{
+	char	*tmp1;
+	char	*result;
+	int	i;
+	int	j;
+
+	result = (char *)malloc(sizeof(char) * (ft_strlen(str1) + ft_strlen(str2) + 2));
+	i = 0;
+	j = 0;
+	while (str1[i])
+	{
+		if (!(str1[i] == '/' && (str1[i + 1] == '/' || str1[i + 1] == '\0')))
+		{
+			result[j++] = str1[i];
+		}
+		i++;
+	}
+	result[j] = '/';
+	j++;
+	i = 0;
+	while (str2[i])
+	{
+		result[j++] = str2[i];
+		i++;
+	}
+	result[j] = '\0';
+
+	return result;
 }
 
 t_file	*ft_lstfadd(t_file *input, struct dirent *file, char *path)
@@ -39,10 +68,11 @@ t_file	*ft_lstfadd(t_file *input, struct dirent *file, char *path)
 
 int	ft_list(char *path)
 {
-	t_file			*files;
-	DIR				*dir;
-	t_file			*tmp;
+	t_file		*files;
+	DIR		*dir;
+	t_file		*tmp;
 	struct	dirent	*tmp2;
+	char		*tmppath;
 
 	files	= NULL;
 
@@ -69,10 +99,10 @@ int	ft_list(char *path)
 			case S_IFBLK:	ft_putstr("block device");		break;
 			case S_IFCHR:	ft_putstr("character device");	break;
 			case S_IFDIR:	
-				ft_putstr("directory");
-				if ((ft_strequ(tmp->name->d_name, "..") == 0) && (ft_strequ(tmp->name->d_name, ".") == 0))
-					tmp->doss = 1;
-				break;
+					ft_putstr("directory");
+					if ((ft_strequ(tmp->name->d_name, "..") == 0) && (ft_strequ(tmp->name->d_name, ".") == 0))
+						tmp->doss = 1;
+					break;
 			case S_IFIFO:	ft_putstr("FIFO/pipe");			break;
 			case S_IFLNK:	ft_putstr("symlink");			break;
 			case S_IFREG:	ft_putstr("regular file");		break;
@@ -92,7 +122,8 @@ int	ft_list(char *path)
 			if (ft_strlen(tmp->name->d_name))
 			{
 				ft_putstr("\n");
-				ft_list(ft_strjoin(path, ft_strjoin("/", tmp->name->d_name)));
+				ft_list(tmppath = ft_path_join(path, tmp->name->d_name));
+				ft_strdel(&tmppath);
 			}
 		}
 		tmp = tmp->next;
