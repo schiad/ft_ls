@@ -6,11 +6,13 @@
 #    By: schiad <marvin@42.fr>                      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2015/11/29 02:24:02 by schiad            #+#    #+#              #
-#    Updated: 2016/03/21 20:10:25 by schiad           ###   ########.fr        #
+#    Updated: 2015/12/04 23:10:10 by schiad           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = libft.a
+
+CC = gcc
 
 SRC = ft_memset.c\
 	  ft_bzero.c\
@@ -74,21 +76,35 @@ SRC = ft_memset.c\
 
 OBJ = $(SRC:.c=.o)
 
-HEADER = includes
+HEADER = $(NAME:.a=.h)
+
+INCLUDES = ./includes
 
 all: $(NAME)
 
 FLAGS = -Wall -Wextra -Werror
 
 $(NAME):
-	gcc $(FLAGS) -I $(HEADER) -c $(SRC)
-	ar rc $(NAME) $(OBJ)
-	ranlib $(NAME)
+	@echo "Compiling all sources in objects files."
+	@$(CC) -FLAGS -I$(INCLUDES) -c $(SRC)
+	@echo "Objects files compiled."
+	@echo "Creating libtf.a file of libft."
+	@ar rc $(NAME) $(OBJ)
+	@echo "libft.a created."
+	@echo "Indexing libft.a."
+	@ranlib $(NAME)
+	@echo "libft.a indexed enjoy."
 
 clean:
-	rm -f $(OBJ)
+	@echo "Deleting objects files."
+	@rm -f $(OBJ)
+	@echo "Objects files deleted."
 
 fclean: clean
-	rm -f $(NAME)
+	@echo "Deleting libft.a."
+	@rm -f $(NAME)
+	@echo "libft.a deleted :-(."
 
 re: fclean all
+
+.PHONY: clean fclean re
