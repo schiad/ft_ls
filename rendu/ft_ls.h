@@ -27,6 +27,7 @@ typedef	struct	s_file
 }				t_file;
 
 t_file  *ft_lstfadd(t_file *input, struct dirent *file, char *path);
+void    ft_lstffree(t_file *input);
 int	ft_list(char *path);
 void	ft_insp_file(t_file *file);
 char	*ft_path_join(const char *str1, const char *str2);

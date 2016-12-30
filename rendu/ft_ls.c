@@ -8,6 +8,8 @@ int	main(int argc, char **argv)
 		ft_list(".");
 	else
 		ft_list(argv[1]);
+	while (1)
+		;
 }
 
 char	*ft_path_join(const char *str1, const char *str2)
@@ -17,7 +19,7 @@ char	*ft_path_join(const char *str1, const char *str2)
 	int	i;
 	int	j;
 
-	result = (char *)malloc(sizeof(char) * (ft_strlen(str1) + ft_strlen(str2) + 2));
+	result = ft_strnew(ft_strlen(str1) + ft_strlen(str2) + 1);
 	i = 0;
 	j = 0;
 	while (str1[i])
@@ -66,6 +68,24 @@ t_file	*ft_lstfadd(t_file *input, struct dirent *file, char *path)
 	return input;
 }
 
+void	ft_lstffree(t_file *input)
+{
+	t_file	*tmp;
+	t_file	*tmp2;
+
+	tmp = input;
+	tmp2 = NULL;
+
+	while (tmp)
+	{
+		tmp2 = tmp;
+		tmp = tmp->next;
+		ft_putstr_fd("Free prop\n", 2);
+		free(tmp2->prop);
+		free(tmp2);
+	}
+}
+
 int	ft_list(char *path)
 {
 	t_file		*files;
@@ -82,8 +102,8 @@ int	ft_list(char *path)
 	dir = opendir(path);
 	if (dir == NULL)
 	{
-		ft_putstr(strerror(errno));
-		ft_putstr("\n");
+		ft_putstr_fd(strerror(errno), 2);
+		ft_putstr_fd("\n\r", 2);
 		return errno;
 	}
 	while ((tmp2 = readdir(dir)) != NULL)
@@ -129,6 +149,7 @@ int	ft_list(char *path)
 		tmp = tmp->next;
 	}
 	closedir(dir);
+	ft_lstffree(files);
 }
 
 void	ft_insp_file(t_file *file)
@@ -141,9 +162,10 @@ void	ft_insp_file(t_file *file)
 	file->prop = (struct stat *)malloc(sizeof(struct stat));
 	if (lstat(pathfile, file->prop) < 0)
 	{
-		ft_putstr("\e[41m");
-		ft_putstr("error = ");
-		ft_putstr(strerror(errno));
-		ft_putstr("\e[0m");
+		ft_putstr_fd("\e[41m", 2);
+		ft_putstr_fd("error = ", 2);
+		ft_putstr_fd(strerror(errno), 2);
+		ft_putstr_fd("\e[0m", 2);
 	}
+	ft_strdel(&pathfile);
 }
