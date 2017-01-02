@@ -8,6 +8,7 @@ int	main(int argc, char **argv)
 
 		flags = (t_flags *)malloc(sizeof(t_flags));
 		flags->l = 1;
+		flags->R = 1;
 		if (argc != 2)
 				ft_list(".", flags);
 		else
@@ -89,37 +90,64 @@ void	ft_lstffree(t_file *input)
 
 void	ft_elemright(mode_t	mode)
 {
-		int		i;
-		int		div[3];
+		ft_rightuser(mode);
+		ft_rightgroup(mode);
+		ft_rightother(mode);
+		ft_putchar('\t');
+}
+
+void	ft_rightuser(mode_t	mode)
+{
 		char	str[4];
 
-		i = 0;
-		div[0] = 1;
-		div[1] = 10;
-		div[2] = 100;
 		str[3] = '\0';
-		while (i < 3)
+		str[0] = (mode & S_IRUSR) ? 'r' : '-';
+		str[1] = (mode & S_IWUSR) ? 'w' : '-';
+		if (mode & S_IXUSR)
 		{
-				str[0] = (mode & (S_IRUSR / div[i])) ? 'r' : '-';
-
-				str[1] = (mode & (S_IWUSR / div[i])) ? 'w' : '-';
-				if (mode & S_IXUSR >> i)
-				{
-						str[2] = (mode & (S_ISUID / div[i])) ? 's' : 'x';
-				}
-				else
-				{
-						str[2] = (mode & (S_ISUID / div[i])) ? 'S' : '-';
-				}
-				if (i == 2)
-				{
-						if (str[2] == 's' || str[2] == 'S')
-								str[2]++;
-				}
-				ft_putstr(str);
-				i++;
+				str[2] = (mode & S_ISUID) ? 's' : 'x';
 		}
-		ft_putchar('\t');
+		else
+		{
+				str[2] = (mode & S_ISUID) ? 'S' : '-';
+		}
+		ft_putstr(str);
+}
+
+void	ft_rightgroup(mode_t	mode)
+{
+		char	str[4];
+
+		str[3] = '\0';
+		str[0] = (mode & S_IRGRP) ? 'r' : '-';
+		str[1] = (mode & S_IWGRP) ? 'w' : '-';
+		if (mode & S_IXGRP)
+		{
+				str[2] = (mode & S_ISGID) ? 's' : 'x';
+		}
+		else
+		{
+				str[2] = (mode & S_ISGID) ? 'S' : '-';
+		}
+		ft_putstr(str);
+}
+
+void	ft_rightother(mode_t	mode)
+{
+		char	str[4];
+
+		str[3] = '\0';
+		str[0] = (mode & S_IROTH) ? 'r' : '-';
+		str[1] = (mode & S_IWOTH) ? 'w' : '-';
+		if (mode & S_IXOTH)
+		{
+				str[2] = (mode & S_ISVTX) ? 't' : 'x';
+		}
+		else
+		{
+				str[2] = (mode & S_ISVTX) ? 'T' : '-';
+		}
+		ft_putstr(str);
 }
 
 char	*ft_elemtype(t_file	*line)
@@ -146,12 +174,45 @@ void	ft_elemname(t_file *line)
 		ft_putchar('\n');
 }
 
+void	ft_elemowner(t_file *line, t_flags *flags)
+{
+		struct passwd *usr;
+		struct group *grp;
+
+		usr = getpwuid(line->prop->st_uid);
+		grp = getgrgid(line->prop->st_gid);
+		ft_putstr(usr->pw_name);
+		ft_putchar(' ');
+		ft_putstr(grp->gr_name);
+		ft_putchar(' ');
+}
+
+void	ft_elemsize(t_file	*line)
+{
+	if (S_ISCHR(line->prop->st_mode) || S_ISBLK(line->prop->st_mode))
+	{
+		ft_putnbr(major(line->prop->st_rdev));
+		ft_putstr(", ");
+		ft_putnbr(minor(line->prop->st_rdev));
+		ft_putchar(' ');
+	}
+	else
+	{
+		ft_putllong(line->prop->st_size);
+		ft_putchar('\t');
+	}
+}
+
 void	ft_printline(t_file	*line, t_flags	*flags)
 {
 		if (flags->l)
 		{
 				ft_putstr(ft_elemtype(line));
 				ft_elemright(line->prop->st_mode);
+				ft_putnbr((int)line->prop->st_nlink);
+				ft_putchar(' ');
+				ft_elemowner(line, flags);
+				ft_elemsize(line);
 		}
 		ft_elemname(line);
 }
@@ -166,8 +227,11 @@ int	ft_list(char *path, t_flags *flags)
 
 		files	= NULL;
 
-		ft_putstr(path);
-		ft_putstr(":\n\n");
+		if (flags->R)
+		{
+				ft_putstr(path);
+				ft_putstr(":\n\n");
+		}
 
 		dir = opendir(path);
 		if (dir == NULL)
@@ -188,7 +252,7 @@ int	ft_list(char *path, t_flags *flags)
 				tmp = tmp->next;
 		}
 		tmp = files;
-		while (tmp)
+		while (tmp && flags->R)
 		{
 				if (tmp->doss)
 				{
@@ -220,5 +284,10 @@ void	ft_insp_file(t_file *file)
 				ft_putstr_fd(strerror(errno), 2);
 				ft_putstr_fd("\e[0m", 2);
 		}
+		file->doss = 0;
+		if ((ft_strequ(file->name->d_name, "..") == 0) &&
+						(ft_strequ(file->name->d_name, ".") == 0))
+				if (S_ISDIR(file->prop->st_mode))
+						file->doss = 1;
 		ft_strdel(&pathfile);
 }

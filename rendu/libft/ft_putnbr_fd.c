@@ -14,9 +14,13 @@
 
 void	ft_putnbr_fd(int n, int fd)
 {
-	char	*nb;
+		long long ncp;
 
-	nb = ft_itoa(n);
-	ft_putstr_fd(nb, fd);
-	ft_strdel(&nb);
+		ncp = (long long)n;
+		if (ncp < 0)
+		{
+				ft_putchar_fd('-', fd);
+				ncp = -ncp;
+		}
+		ft_putdigit_fd(ncp, fd);
 }

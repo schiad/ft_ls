@@ -44,8 +44,8 @@ int	main (int argc, char **argv)
 	usr = getpwuid(buf.st_uid);
 	grp = getgrgid(buf.st_gid);
 	printf("%s\n", file);
-	printf("\e[91mID dev. Minor: %d\n", minor(buf.st_dev));
-	printf("\e[92mID dev. Major: %d\n", major(buf.st_dev));
+	printf("\e[91mID dev. Minor: %d\n", minor(buf.st_rdev));
+	printf("\e[92mID dev. Major: %d\n", major(buf.st_rdev));
 	printf("\e[93mINODE: %llu\n", (long long)buf.st_ino);
 	printf("\e[94mType: ");
 

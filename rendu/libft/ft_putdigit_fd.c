@@ -1,18 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_putnbr.c                                        :+:      :+:    :+:   */
+/*   ft_putllong_fd.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: schiad <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2015/11/29 18:32:10 by schiad            #+#    #+#             */
-/*   Updated: 2016/03/29 15:38:25 by schiad           ###   ########.fr       */
+/*   Created: 2015/11/29 19:58:49 by schiad            #+#    #+#             */
+/*   Updated: 2016/03/21 10:27:21 by schiad           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "includes/libft.h"
 
-void	ft_putnbr(int n)
+void	ft_putdigit_fd(long long n, int fd)
 {
-	ft_putnbr_fd(n, 1);
+	if ((n / 10) > 0)
+		ft_putdigit_fd(n / 10, fd);
+	ft_putchar_fd(((n % 10) + '0'), fd);
 }
