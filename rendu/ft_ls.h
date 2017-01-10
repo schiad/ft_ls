@@ -17,27 +17,27 @@
 # include <errno.h>
 # include "libft.h"
 
-typedef	struct	s_flags
+typedef	struct		s_flags
 {
-	int				a;
-	int				l;
-	int				r;
-	int				R;
-	int				t;
-}				t_flags;
+	int		a;
+	int		l;
+	int		r;
+	int		R;
+	int		t;
+}			t_flags;
 
-typedef	struct	s_file
+typedef	struct		s_file
 {
 	struct	stat	*prop;
 	struct	dirent	*name;
 	struct	s_file	*next;
-	int				doss;
-	char			*path;
-}				t_file;
+	int		doss;
+	char		*path;
+}			t_file;
 
 t_file  *ft_lstfadd(t_file *input, struct dirent *file, char *path);
 void    ft_lstffree(t_file *input);
-int		ft_list(char *path, t_flags *flags);
+int	ft_list(char *path, t_flags *flags);
 void    ft_elemright(mode_t	mode);
 void    ft_rightuser(mode_t mode);
 void    ft_rightgroup(mode_t mode);
