@@ -193,7 +193,7 @@ void	ft_elemowner(t_file *line, t_flags *flags)
 	else
 		ft_putllong((long long)line->prop->st_uid);
 	ft_putchar(' ');
-	if (usr)
+	if (grp)
 		ft_putstr(grp->gr_name);
 	else
 		ft_putllong((long long)line->prop->st_gid);
