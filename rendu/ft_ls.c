@@ -87,7 +87,9 @@ void	ft_lstffree(t_file *input)
 	{
 		tmp2 = tmp;
 		tmp = tmp->next;
+		free(tmp2->name);
 		free(tmp2->prop);
+
 		free(tmp2);
 	}
 }
@@ -186,9 +188,15 @@ void	ft_elemowner(t_file *line, t_flags *flags)
 
 	usr = getpwuid(line->prop->st_uid);
 	grp = getgrgid(line->prop->st_gid);
-	ft_putstr(usr->pw_name);
+	if (usr)
+		ft_putstr(usr->pw_name);
+	else
+		ft_putllong((long long)line->prop->st_uid);
 	ft_putchar(' ');
-	ft_putstr(grp->gr_name);
+	if (usr)
+		ft_putstr(grp->gr_name);
+	else
+		ft_putllong((long long)line->prop->st_gid);
 	ft_putchar(' ');
 }
 
