@@ -260,8 +260,8 @@ int	ft_list(char *path, t_flags *flags)
 	tmp = files;
 	while (tmp)
 	{
-		ft_insp_file(tmp);
-		ft_printline(tmp ,flags);
+		if(!ft_insp_file(tmp))
+			ft_printline(tmp ,flags);
 		tmp = tmp->next;
 	}
 	tmp = files;
@@ -283,7 +283,7 @@ int	ft_list(char *path, t_flags *flags)
 	return 0;
 }
 
-void	ft_insp_file(t_file *file)
+int		ft_insp_file(t_file *file)
 {
 	char *tmp;
 	char *pathfile;
@@ -294,9 +294,12 @@ void	ft_insp_file(t_file *file)
 	if (lstat(pathfile, file->prop) < 0)
 	{
 		ft_putstr_fd("\e[41m", 2);
-		ft_putstr_fd("error = ", 2);
+		ft_putstr_fd("ft_ls: ", 2);
+		ft_putstr_fd(file->name->d_name, 2);
+		ft_putstr_fd(": ", 2);
 		ft_putstr_fd(strerror(errno), 2);
-		ft_putstr_fd("\e[0m", 2);
+		ft_putstr_fd("\e[0m\n", 2);
+		return 1;
 	}
 	file->doss = 0;
 	if ((ft_strequ(file->name->d_name, "..") == 0) &&
@@ -304,4 +307,5 @@ void	ft_insp_file(t_file *file)
 		if (S_ISDIR(file->prop->st_mode))
 			file->doss = 1;
 	ft_strdel(&pathfile);
+	return 0;
 }
