@@ -56,7 +56,7 @@ t_file	*ft_lstfadd(t_file *input, struct dirent *file, char *path)
 			return ((void *)NULL);
 		if (!(tmp->name = (struct dirent *)malloc(sizeof(struct dirent))))
 			return ((void *)NULL);
-//		tmp->name = file;
+		//		tmp->name = file;
 		ft_memcpy((void *)tmp->name, (void *)file, sizeof(struct dirent));
 		tmp->path = path;
 		tmp->doss = 0;
@@ -226,8 +226,34 @@ void	ft_printline(t_file	*line, t_flags	*flags)
 		ft_putchar(' ');
 		ft_elemowner(line, flags);
 		ft_elemsize(line);
+		ft_display_date(line->prop->st_mtime);
 	}
 	ft_elemname(line);
+}
+
+void	ft_display_date(time_t date)
+{
+	char	*str1;
+	char	*str2;
+	time_t	actualtime;
+
+	actualtime = time(0);
+	str1 = ctime(&date);
+	if ((actualtime - 15778463) > date || actualtime < date)
+	{
+		str2 = ft_strnew(6);
+		str2 = ft_strsub(str1, 20, 4);
+		str1 = ft_strsub(str1, 4, 6);
+		str1 = ft_strjoin(str1, "  ");
+		str1 = ft_strjoin(str1, str2);
+		free(str2);
+	}
+	else
+		str1 = ft_strsub(str1, 4, 12);
+	str1[12] = '\0';
+	ft_putstr(str1);
+	ft_putchar(' ');
+	free(str1);
 }
 
 int	ft_list(char *path, t_flags *flags)

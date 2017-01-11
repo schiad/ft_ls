@@ -45,6 +45,7 @@ void    ft_rightother(mode_t mode);
 char    *ft_elemtype(t_file *line);
 void    ft_elemowner(t_file *line, t_flags *flags);
 void    ft_printline(t_file *line, t_flags *flags);
+void	ft_display_date(time_t date);
 int		ft_insp_file(t_file *file);
 void	ft_elemname(t_file *line);
 char	*ft_path_join(const char *str1, const char *str2);

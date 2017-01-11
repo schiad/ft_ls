@@ -70,6 +70,7 @@ int	main (int argc, char **argv)
 	printf("\e[95mLast status change: %s", ctime(&buf.st_ctime));
 	printf("\e[96mLast file access: %s", ctime(&buf.st_atime));
 	printf("\e[91mLast file modification: %s", ctime(&buf.st_mtime));
+	printf("\e[91mLast file modification: %s", asctime(localtime(&buf.st_mtime)));
 	printf("\e[92mUser = %s\n", usr->pw_name);
 	printf("\e[93mGroupe = %s\n", grp->gr_name);
 	printf("\e[94mPermissions: ");
