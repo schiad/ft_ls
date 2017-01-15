@@ -51,7 +51,7 @@ void    ft_printline(t_file *line, t_flags *flags);
 void	ft_print_date(time_t date);
 void    ft_printtotal(t_file *files, t_flags *flags);
 int		ft_insp_file(t_file *file, t_flags *flags);
-void	ft_elemname(t_file *line);
+void	ft_elemname(t_file *line, t_flags *flags);
 char	*ft_path_join(const char *str1, const char *str2);
 
 #endif
