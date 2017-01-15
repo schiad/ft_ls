@@ -22,6 +22,7 @@ typedef	struct		s_flags
 	int				a;
 	int				l;
 	int				r;
+	int				s;
 	int				R;
 	int				t;
 	char			*exec;
@@ -47,7 +48,7 @@ void    ft_rightother(mode_t mode);
 char    *ft_elemtype(t_file *line);
 void    ft_elemowner(t_file *line, t_flags *flags);
 void    ft_printline(t_file *line, t_flags *flags);
-void	ft_display_date(time_t date);
+void	ft_print_date(time_t date);
 void    ft_printtotal(t_file *files, t_flags *flags);
 int		ft_insp_file(t_file *file, t_flags *flags);
 void	ft_elemname(t_file *line);

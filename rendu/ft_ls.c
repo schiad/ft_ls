@@ -9,6 +9,7 @@ int	main(int argc, char **argv)
 		flags = (t_flags *)malloc(sizeof(t_flags));
 		flags->l = 1;
 		flags->R = 1;
+		flags->s = 1;
 		flags->exec = argv[0];
 		if (argc != 2)
 				ft_list(".", flags);
@@ -234,19 +235,24 @@ void	ft_printline(t_file	*line, t_flags	*flags)
 		{
 				if (flags->l)
 				{
+					if (flags->s)
+					{
+						ft_putllong(line->prop->st_blocks);
+						ft_putchar(' ');
+					}
 						ft_putstr(ft_elemtype(line));
 						ft_elemright(line->prop->st_mode);
 						ft_putnbr((int)line->prop->st_nlink);
 						ft_putchar(' ');
 						ft_elemowner(line, flags);
 						ft_elemsize(line);
-						ft_display_date(line->prop->st_mtime);
+						ft_print_date(line->prop->st_mtime);
 				}
 				ft_elemname(line);
 		}
 }
 
-void	ft_display_date(time_t date)
+void	ft_print_date(time_t date)
 {
 		char	*str1;
 		char	*str2;
@@ -261,14 +267,14 @@ void	ft_display_date(time_t date)
 				str1 = ft_strsub(str1, 4, 6);
 				str1 = ft_strjoin(str1, "  ");
 				str1 = ft_strjoin(str1, str2);
-				free(str2);
+				ft_memdel((void **)&str2);
 		}
 		else
 				str1 = ft_strsub(str1, 4, 12);
 		str1[12] = '\0';
 		ft_putstr(str1);
 		ft_putchar(' ');
-		free(str1);
+		ft_memdel((void **)&str1);
 }
 
 void	ft_printtotal(t_file *files, t_flags *flags)
@@ -283,7 +289,8 @@ void	ft_printtotal(t_file *files, t_flags *flags)
 				ft_putstr("total ");
 				while (tmp)
 				{
-					total = total + tmp->prop->st_blocks;
+					if (tmp->name->d_name[0] != '.')
+						total = total + tmp->prop->st_blocks;
 					tmp = tmp->next;
 				}
 				ft_putllong(total);
