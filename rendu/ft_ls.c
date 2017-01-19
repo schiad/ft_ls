@@ -9,17 +9,18 @@ int	main(int argc, char **argv)
 	flags = (t_flags *)malloc(sizeof(t_flags));
 	flags->l = 1;
 	flags->R = 1;
+	flags->a = 1;
 	flags->s = 1;
 	flags->exec = argv[0];
 	if (argc != 2)
-		ft_list(".", flags);
+		list(".", flags);
 	else
-		ft_list(argv[1], flags);
+		list(argv[1], flags);
 	ft_memdel((void **)&flags);
 	return 0;
 }
 
-char	*ft_path_join(const char *str1, const char *str2)
+char	*path_join(const char *str1, const char *str2)
 {
 	char	*tmp1;
 	char	*result;
@@ -50,7 +51,7 @@ char	*ft_path_join(const char *str1, const char *str2)
 	return result;
 }
 
-t_file	*ft_lstfadd(t_file *input, struct dirent *file, char *path)
+t_file	*lstfadd(t_file *input, struct dirent *file, char *path)
 {
 	t_file	*tmp;
 	if (!input)
@@ -72,12 +73,12 @@ t_file	*ft_lstfadd(t_file *input, struct dirent *file, char *path)
 		{
 			tmp = tmp->next;
 		}
-		tmp->next = ft_lstfadd(NULL, file, path);
+		tmp->next = lstfadd(NULL, file, path);
 	}
 	return input;
 }
 
-void	ft_lstffree(t_file *input)
+void	lstffree(t_file *input)
 {
 	t_file	*tmp;
 	t_file	*tmp2;
@@ -96,15 +97,15 @@ void	ft_lstffree(t_file *input)
 	}
 }
 
-void	ft_elemright(mode_t	mode)
+void	elemright(mode_t	mode)
 {
-	ft_rightuser(mode);
-	ft_rightgroup(mode);
-	ft_rightother(mode);
+	rightuser(mode);
+	rightgroup(mode);
+	rightother(mode);
 	ft_putchar('\t');
 }
 
-void	ft_rightuser(mode_t	mode)
+void	rightuser(mode_t	mode)
 {
 	char	str[4];
 
@@ -122,7 +123,7 @@ void	ft_rightuser(mode_t	mode)
 	ft_putstr(str);
 }
 
-void	ft_rightgroup(mode_t	mode)
+void	rightgroup(mode_t	mode)
 {
 	char	str[4];
 
@@ -140,7 +141,7 @@ void	ft_rightgroup(mode_t	mode)
 	ft_putstr(str);
 }
 
-void	ft_rightother(mode_t	mode)
+void	rightother(mode_t	mode)
 {
 	char	str[4];
 
@@ -158,7 +159,7 @@ void	ft_rightother(mode_t	mode)
 	ft_putstr(str);
 }
 
-char	*ft_elemtype(t_file	*line)
+char	*elemtype(t_file	*line)
 {
 	if (S_ISREG(line->prop->st_mode))
 		return ("-");
@@ -177,17 +178,17 @@ char	*ft_elemtype(t_file	*line)
 	return ("U");
 }
 
-void	ft_elemname(t_file *line, t_flags *flags)
+void	elemname(t_file *line, t_flags *flags)
 {
 	char	*pathfile;
 	char	*link;
 	char	*type;
 
-	type = ft_elemtype(line);
+	type = elemtype(line);
 	ft_putstr(line->name->d_name);
 	if (flags->l && type[0] == 'l')
 	{
-		pathfile = ft_path_join(line->path, line->name->d_name);
+		pathfile = path_join(line->path, line->name->d_name);
 		link = ft_strnew(1025);
 		if (0 > readlink(pathfile, link, sizeof(link)))
 		{
@@ -208,7 +209,7 @@ void	ft_elemname(t_file *line, t_flags *flags)
 	ft_putchar('\n');
 }
 
-void	ft_elemowner(t_file *line, t_flags *flags)
+void	elemowner(t_file *line, t_flags *flags)
 {
 	struct passwd *usr;
 	struct group *grp;
@@ -227,7 +228,7 @@ void	ft_elemowner(t_file *line, t_flags *flags)
 	ft_putchar(' ');
 }
 
-void	ft_elemsize(t_file	*line)
+void	elemsize(t_file	*line)
 {
 	if (S_ISCHR(line->prop->st_mode) || S_ISBLK(line->prop->st_mode))
 	{
@@ -243,7 +244,7 @@ void	ft_elemsize(t_file	*line)
 	}
 }
 
-void	ft_printline(t_file	*line, t_flags	*flags)
+void	printline(t_file	*line, t_flags	*flags)
 {
 	if (line->error)
 	{
@@ -265,19 +266,19 @@ void	ft_printline(t_file	*line, t_flags	*flags)
 				ft_putllong(line->prop->st_blocks);
 				ft_putchar(' ');
 			}
-			ft_putstr(ft_elemtype(line));
-			ft_elemright(line->prop->st_mode);
+			ft_putstr(elemtype(line));
+			elemright(line->prop->st_mode);
 			ft_putnbr((int)line->prop->st_nlink);
 			ft_putchar(' ');
-			ft_elemowner(line, flags);
-			ft_elemsize(line);
-			ft_print_date(line->prop->st_mtime);
+			elemowner(line, flags);
+			elemsize(line);
+			print_date(line->prop->st_mtime);
 		}
-		ft_elemname(line, flags);
+		elemname(line, flags);
 	}
 }
 
-void	ft_print_date(time_t date)
+void	print_date(time_t date)
 {
 	char	*str1;
 	char	*str2;
@@ -302,7 +303,7 @@ void	ft_print_date(time_t date)
 	ft_memdel((void **)&str1);
 }
 
-void	ft_printtotal(t_file *files, t_flags *flags)
+void	printtotal(t_file *files, t_flags *flags)
 {
 	t_file		*tmp;
 	long long	total;
@@ -314,7 +315,7 @@ void	ft_printtotal(t_file *files, t_flags *flags)
 		ft_putstr("total ");
 		while (tmp)
 		{
-			if (tmp->name->d_name[0] != '.')
+			if (flags->a == 1 || tmp->name->d_name[0] != '.')
 				total = total + tmp->prop->st_blocks;
 			tmp = tmp->next;
 		}
@@ -323,7 +324,7 @@ void	ft_printtotal(t_file *files, t_flags *flags)
 	}
 }
 
-int	ft_list(char *path, t_flags *flags)
+int		list(char *path, t_flags *flags)
 {
 	t_file			*files;
 	DIR				*dir;
@@ -345,7 +346,7 @@ int	ft_list(char *path, t_flags *flags)
 		return errno;
 	}
 	while ((tmp2 = readdir(dir)) != NULL)
-		files = ft_lstfadd(files, tmp2, path);
+		files = lstfadd(files, tmp2, path);
 	if (flags->R)
 	{
 		ft_putstr(path);
@@ -354,15 +355,15 @@ int	ft_list(char *path, t_flags *flags)
 	tmp = files;
 	while (tmp)
 	{
-		ft_insp_file(tmp, flags);
+		insp_file(tmp, flags);
 		tmp = tmp->next;
 	}
-	ft_printtotal(files, flags);
+	printtotal(files, flags);
 	tmp = files;
 	while (tmp)
 	{
-		if (!tmp->error)
-			ft_printline(tmp ,flags);
+		if (!tmp->error && (tmp->name->d_name[0] != '.') || flags->a == 1)
+			printline(tmp ,flags);
 		tmp = tmp->next;
 	}
 
@@ -374,22 +375,22 @@ int	ft_list(char *path, t_flags *flags)
 			if (ft_strlen(tmp->name->d_name))
 			{
 				ft_putstr("\n");
-				ft_list(tmppath = ft_path_join(path, tmp->name->d_name), flags);
+				list(tmppath = path_join(path, tmp->name->d_name), flags);
 				ft_strdel(&tmppath);
 			}
 		}
 		tmp = tmp->next;
 	}
 	closedir(dir);
-	ft_lstffree(files);
+	lstffree(files);
 	return 0;
 }
 
-int		ft_insp_file(t_file *file, t_flags *flags)
+int		insp_file(t_file *file, t_flags *flags)
 {
 	char *pathfile;
 
-	pathfile = ft_path_join(file->path, file->name->d_name);
+	pathfile = path_join(file->path, file->name->d_name);
 	file->prop = (struct stat *)malloc(sizeof(struct stat));
 	if (lstat(pathfile, file->prop) < 0)
 	{

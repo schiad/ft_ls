@@ -38,20 +38,20 @@ typedef	struct		s_file
 	int				error;
 }					t_file;
 
-t_file  *ft_lstfadd(t_file *input, struct dirent *file, char *path);
-void    ft_lstffree(t_file *input);
-int	ft_list(char *path, t_flags *flags);
-void    ft_elemright(mode_t	mode);
-void    ft_rightuser(mode_t mode);
-void    ft_rightgroup(mode_t mode);
-void    ft_rightother(mode_t mode);
-char    *ft_elemtype(t_file *line);
-void    ft_elemowner(t_file *line, t_flags *flags);
-void    ft_printline(t_file *line, t_flags *flags);
-void	ft_print_date(time_t date);
-void    ft_printtotal(t_file *files, t_flags *flags);
-int		ft_insp_file(t_file *file, t_flags *flags);
-void	ft_elemname(t_file *line, t_flags *flags);
-char	*ft_path_join(const char *str1, const char *str2);
+t_file  *lstfadd(t_file *input, struct dirent *file, char *path);
+void    lstffree(t_file *input);
+int		list(char *path, t_flags *flags);
+void    elemright(mode_t	mode);
+void    rightuser(mode_t mode);
+void    rightgroup(mode_t mode);
+void    rightother(mode_t mode);
+char    *elemtype(t_file *line);
+void    elemowner(t_file *line, t_flags *flags);
+void    printline(t_file *line, t_flags *flags);
+void	print_date(time_t date);
+void    printtotal(t_file *files, t_flags *flags);
+int		insp_file(t_file *file, t_flags *flags);
+void	elemname(t_file *line, t_flags *flags);
+char	*path_join(const char *str1, const char *str2);
 
 #endif
