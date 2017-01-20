@@ -50,14 +50,13 @@ void	sort_name(t_file **file, t_flags *flags)
 								tmp[0] = *iter; 				//	a
 								tmp[1] = (*iter)->next;			//	b
 								tmp[2] = (*iter)->next->next;	//	c
-								if (tmp[0] == tmp[3])
-									tmp[3] = tmp[1];
+								if (tmp[0] == tmp[3])			// if now == a
+									tmp[3] = tmp[1];			// start = b
 								*iter = tmp[1];					//	b->c	c->NULL
 								(*iter)->next = tmp[0];			//	b->a	a->b	
 								(tmp[0])->next = tmp[2];		//	b->a	a->c	c->NULL
 						}
-						else
-								*iter = (*iter)->next;
+						*iter = (*iter)->next;
 				}
 		}
 }
