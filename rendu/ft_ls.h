@@ -53,5 +53,6 @@ void    printtotal(t_file *files, t_flags *flags);
 int		insp_file(t_file *file, t_flags *flags);
 void	elemname(t_file *line, t_flags *flags);
 char	*path_join(const char *str1, const char *str2);
+void	sort_name(t_file **file, t_flags *flags);
 
 #endif
