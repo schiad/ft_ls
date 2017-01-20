@@ -7,9 +7,9 @@ int	main(int argc, char **argv)
 	t_flags	*flags;
 
 	flags = (t_flags *)malloc(sizeof(t_flags));
-	flags->l = 0;
+	flags->l = 1;
 	flags->R = 0;
-	flags->r = 0;
+	flags->r = 1;
 	flags->a = 1;
 	flags->s = 0;
 	flags->exec = argv[0];
@@ -23,32 +23,36 @@ int	main(int argc, char **argv)
 
 void	sort_name(t_file **file, t_flags *flags)
 {
+	ft_putstr_fd("CALL sort\n", 2);
 	t_file	*tmp[4];
 	t_file	**iter;
-	int		sort;
 	int		ok;
+	int		sort;
 
+	iter = file;
+	ok = 0;
 	while (!ok)
 	{
 		ft_putstr_fd("!ok\n", 2);
 		ok = 1;
-		iter = file;
+		//*iter = *file;
+		ft_putstr_fd((*iter)->name->d_name, 2);
 		while (*iter && (*iter)->next)
 		{
 			ft_putstr_fd("iter\t", 2);
+			ft_putstr_fd((*iter)->name->d_name, 2);
+			ft_putstr_fd("\n", 2);
 			sort = ft_strcmp((*iter)->name->d_name, (*iter)->next->name->d_name);
-			if (flags->r)
-				sort = -sort;
-			if (sort < 0)
+			if (sort > 0)
 			{
 				ft_putstr_fd("sort\n", 2);
-				ok = 0;
-				tmp[0] = *iter;
-				tmp[1] = (*iter)->next;
-				tmp[2] = (*iter)->next->next;
-				*iter = tmp[1];
-				(*iter)->next = tmp[0];
-				(*iter)->next->next = tmp[2];
+				ok = 0;							//	a->b	b->c	c->NULL
+				tmp[0] = *iter; 				//	a
+				tmp[1] = (*iter)->next;			//	b
+				tmp[2] = (*iter)->next->next;	//	c
+				*iter = tmp[1];					//	b->c	c->NULL
+				(*iter)->next = tmp[0];			//	b->a	a->b	
+				(tmp[0])->next = tmp[2];		//	b->a	a->c	c->NULL
 			}
 			else
 				*iter = (*iter)->next;
