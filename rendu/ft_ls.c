@@ -7,11 +7,11 @@ int	main(int argc, char **argv)
 	t_flags	*flags;
 
 	flags = (t_flags *)malloc(sizeof(t_flags));
-	flags->l = 0;
-	flags->R = 0;
+	flags->l = 1;
+	flags->R = 1;
 	flags->r = 0;
 	flags->a = 1;
-	flags->s = 0;
+	flags->s = 1;
 	flags->exec = argv[0];
 	if (argc != 2)
 		list(".", flags);
@@ -23,50 +23,39 @@ int	main(int argc, char **argv)
 
 void	sort_name(t_file **file, t_flags *flags)
 {
-	ft_putstr_fd("CALL SORT\n", 2);
 	t_file	*tmp[5];
 	t_file	*iter;
 	int	ok;
 	int	sort;
 
 	ok = 0;
-	tmp[3] = NULL;
 	tmp[0] = *file;
 	while (!ok)
 	{
 		ok = 1;
-		iter = tmp[0];															// 	a->b	b->c	c->NULL
-		while (iter->next)
+		iter = tmp[0];
+		while (iter->next && ok)
 		{
-			ft_putstr_fd(iter->name->d_name, 2);
-			ft_putstr_fd(" vs ", 2);
-			ft_putstr_fd(iter->next->name->d_name, 2);
-			ft_putstr_fd(" tmp3 == ", 2);
-			if (tmp[3])
-				ft_putstr_fd(tmp[3]->name->d_name, 2);
-			tmp[1] = iter;
 			tmp[2] = iter->next->next;
 			sort = ft_strcmp(iter->name->d_name, iter->next->name->d_name);
 			if (flags->r)
 				sort = -sort;
 			if (sort > 0)
 			{
-				ft_putstr_fd("\nSORT           SORT", 2);
 				ok = 0;
 				if (tmp[0] == iter)
-					tmp[0] = iter->next;										//	
+					tmp[0] = iter->next;
 				else
-					tmp[3]->next = iter->next;										//	
-				tmp[1]->next = tmp[2];											//	
+					tmp[3]->next = iter->next;
+				tmp[3]->next->next = iter;
+				tmp[3]->next->next->next = tmp[2];
 			}
 			else
 			{
 				tmp[3] = iter;
 				iter = iter->next;
 			}
-			ft_putstr_fd("\nok\n", 2);
 		}
-		ft_putstr_fd("OK\n", 2);
 	}
 }
 
