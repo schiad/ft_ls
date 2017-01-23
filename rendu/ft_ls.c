@@ -8,7 +8,7 @@ int	main(int argc, char **argv)
 
 	flags = (t_flags *)malloc(sizeof(t_flags));
 	flags->l = 1;
-	flags->R = 1;
+	flags->R = 0;
 	flags->r = 0;
 	flags->a = 1;
 	flags->s = 1;
@@ -32,29 +32,42 @@ void	sort_name(t_file **file, t_flags *flags)
 	tmp[0] = *file;
 	while (!ok)
 	{
+		ft_putstr_fd("!ok\t", 2);
 		ok = 1;
 		iter = tmp[0];
 		while (iter->next && ok)
 		{
 			tmp[2] = iter->next->next;
+			ft_putstr_fd(iter->name->d_name, 2);
+			ft_putstr_fd("\tvs\t", 2);
+			ft_putstr_fd(iter->next->name->d_name, 2);
 			sort = ft_strcmp(iter->name->d_name, iter->next->name->d_name);
 			if (flags->r)
 				sort = -sort;
 			if (sort > 0)
 			{
+				ft_putstr_fd("\tsort\t", 2);
 				ok = 0;
 				if (tmp[0] == iter)
+				{
+					ft_putstr_fd("first replace\n", 2);
 					tmp[0] = iter->next;
+					tmp[0]->next = iter;
+					iter->next = tmp[2];
+				}
 				else
+				{
 					tmp[3]->next = iter->next;
-				tmp[3]->next->next = iter;
-				tmp[3]->next->next->next = tmp[2];
+					tmp[3]->next->next = iter;
+					tmp[3]->next->next->next = tmp[2];
+				}
 			}
 			else
 			{
 				tmp[3] = iter;
 				iter = iter->next;
 			}
+			ft_putstr_fd("\n", 2);
 		}
 	}
 }
@@ -393,7 +406,8 @@ int		list(char *path, t_flags *flags)
 		insp_file(tmp, flags);
 		tmp = tmp->next;
 	}
-	//		7 lines to remove
+	//		8 lines to remove
+	ft_putstr_fd("\e[32;41m", 2);
 	tmp = files;
 	while (tmp)
 	{
@@ -401,6 +415,7 @@ int		list(char *path, t_flags *flags)
 			printline(tmp ,flags);
 		tmp = tmp->next;
 	}
+	ft_putstr_fd("\e[0m", 2);
 	sort_name(&files, flags);
 	if (flags->R)
 	{
