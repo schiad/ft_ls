@@ -8,7 +8,7 @@ int	main(int argc, char **argv)
 
 	flags = (t_flags *)malloc(sizeof(t_flags));
 	flags->l = 1;
-	flags->R = 0;
+	flags->R = 1;
 	flags->r = 0;
 	flags->a = 1;
 	flags->s = 1;
@@ -103,37 +103,36 @@ char	*path_join(const char *str1, const char *str2)
 	return result;
 }
 
-t_file	*lstfadd(t_file *input, struct dirent *file, char *path)
+void	lstfadd(t_list **files, struct dirent *file, char *path)
 {
-	t_file	*tmp;
-	if (!input)
+	t_list	*tmp;
+	t_list	*tmp2;
+	t_file	*content;
+
+	tmp2 = *files;
+
+	tmp = ft_lstnew(NULL, 0);
+	tmp->content = (t_file *)malloc(sizeof(t_file));
+	content = tmp->content;
+	content->name = (struct dirent *)malloc(sizeof(struct dirent));
+	ft_memcpy((void *)content->name, (void *)file, sizeof(struct dirent));
+	content->path = path;
+	content->doss = 0;
+	if (tmp2)
 	{
-		if (!(tmp = (t_file *)malloc(sizeof(t_file))))
-			return ((void *)NULL);
-		if (!(tmp->name = (struct dirent *)malloc(sizeof(struct dirent))))
-			return ((void *)NULL);
-		ft_memcpy((void *)tmp->name, (void *)file, sizeof(struct dirent));
-		tmp->path = path;
-		tmp->doss = 0;
-		tmp->next = NULL;
-		return tmp;
+		while (tmp2->next)
+			tmp2 = tmp2->next;
+		tmp2->next = tmp;
 	}
 	else
-	{
-		tmp = input;
-		while (tmp->next)
-		{
-			tmp = tmp->next;
-		}
-		tmp->next = lstfadd(NULL, file, path);
-	}
-	return input;
+		*files = tmp;
 }
 
-void	lstffree(t_file *input)
+void	lstffree(t_list *input)
 {
-	t_file	*tmp;
-	t_file	*tmp2;
+	t_list	*tmp;
+	t_list	*tmp2;
+	t_file	*content;
 
 	tmp = input;
 	tmp2 = NULL;
@@ -142,9 +141,10 @@ void	lstffree(t_file *input)
 	{
 		tmp2 = tmp;
 		tmp = tmp->next;
-		ft_memdel((void **)&tmp2->name);
-		ft_memdel((void **)&tmp2->prop);
-
+		content = tmp2->content;
+		ft_memdel((void **)&content->name);
+		ft_memdel((void **)&content->prop);
+		ft_memdel((void **)&content);
 		ft_memdel((void **)&tmp2);
 	}
 }
@@ -211,21 +211,21 @@ void	rightother(mode_t	mode)
 	ft_putstr(str);
 }
 
-char	*elemtype(t_file	*line)
+char	*elemtype(t_file	*content)
 {
-	if (S_ISREG(line->prop->st_mode))
+	if (S_ISREG(content->prop->st_mode))
 		return ("-");
-	else if (S_ISDIR(line->prop->st_mode))
+	else if (S_ISDIR(content->prop->st_mode))
 		return ("d");
-	else if (S_ISCHR(line->prop->st_mode))
+	else if (S_ISCHR(content->prop->st_mode))
 		return ("c");
-	else if (S_ISBLK(line->prop->st_mode))
+	else if (S_ISBLK(content->prop->st_mode))
 		return ("b");
-	else if (S_ISFIFO(line->prop->st_mode))
+	else if (S_ISFIFO(content->prop->st_mode))
 		return ("p");
-	else if (S_ISLNK(line->prop->st_mode))
+	else if (S_ISLNK(content->prop->st_mode))
 		return ("l");
-	else if (S_ISSOCK(line->prop->st_mode))
+	else if (S_ISSOCK(content->prop->st_mode))
 		return ("s");
 	return ("U");
 }
@@ -296,37 +296,43 @@ void	elemsize(t_file	*line)
 	}
 }
 
-void	printline(t_file	*line, t_flags	*flags)
+void	printline(t_list *line, t_flags *flags)
 {
-	if (line->error)
+	t_file	*cont;
+
+	cont = line->content;
+	if (cont->name->d_name[0] != '.' || flags->a == 1)
 	{
-		ft_putstr_fd(flags->exec, 2);
-		ft_putstr_fd(": cannot access ", 2);
-		ft_putstr_fd(line->path, 2);
-		ft_putstr_fd("/", 2);
-		ft_putstr_fd(line->name->d_name, 2);
-		ft_putstr_fd(": ", 2);
-		ft_putstr_fd(strerror(errno), 2);
-		ft_putstr_fd("\e[0m\n", 2);
-	}
-	else
-	{
-		if (flags->s)
+		if (cont->error)
 		{
-			ft_putllong(line->prop->st_blocks);
-			ft_putchar(' ');
+			ft_putstr_fd(flags->exec, 2);
+			ft_putstr_fd(": cannot access ", 2);
+			ft_putstr_fd(cont->path, 2);
+			ft_putstr_fd("/", 2);
+			ft_putstr_fd(cont->name->d_name, 2);
+			ft_putstr_fd(": ", 2);
+			ft_putstr_fd(strerror(errno), 2);
+			ft_putstr_fd("\e[0m\n", 2);
 		}
-		if (flags->l)
+		else
 		{
-			ft_putstr(elemtype(line));
-			elemright(line->prop->st_mode);
-			ft_putnbr((int)line->prop->st_nlink);
-			ft_putchar(' ');
-			elemowner(line, flags);
-			elemsize(line);
-			print_date(line->prop->st_mtime);
+			if (flags->s)
+			{
+				ft_putllong(cont->prop->st_blocks);
+				ft_putchar(' ');
+			}
+			if (flags->l)
+			{
+				ft_putstr(elemtype(cont));
+				elemright(cont->prop->st_mode);
+				ft_putnbr((int)cont->prop->st_nlink);
+				ft_putchar(' ');
+				elemowner(cont, flags);
+				elemsize(cont);
+				print_date(cont->prop->st_mtime);
+			}
+			elemname(cont, flags);
 		}
-		elemname(line, flags);
 	}
 }
 
@@ -355,10 +361,11 @@ void	print_date(time_t date)
 	ft_memdel((void **)&str1);
 }
 
-void	printtotal(t_file *files, t_flags *flags)
+void	printtotal(t_list *files, t_flags *flags)
 {
-	t_file		*tmp;
+	t_list		*tmp;
 	long long	total;
+	t_file		*cont;
 
 	tmp = files;
 	total = 0;
@@ -367,8 +374,9 @@ void	printtotal(t_file *files, t_flags *flags)
 		ft_putstr("total ");
 		while (tmp)
 		{
-			if (flags->a == 1 || tmp->name->d_name[0] != '.')
-				total = total + tmp->prop->st_blocks;
+			cont = tmp->content;
+			if (flags->a == 1 || cont->name->d_name[0] != '.')
+				total = total + cont->prop->st_blocks;
 			tmp = tmp->next;
 		}
 		ft_putllong(total);
@@ -378,9 +386,9 @@ void	printtotal(t_file *files, t_flags *flags)
 
 int		list(char *path, t_flags *flags)
 {
-	t_file			*files;
+	t_list			*files;
 	DIR				*dir;
-	t_file			*tmp;
+	t_list			*tmp;
 	struct	dirent	*tmp2;
 	char			*tmppath;
 
@@ -398,25 +406,9 @@ int		list(char *path, t_flags *flags)
 		return errno;
 	}
 	while ((tmp2 = readdir(dir)) != NULL)
-		files = lstfadd(files, tmp2, path);
-	//		6 lines to remove
-	tmp = files;
-	while (tmp)
-	{
-		insp_file(tmp, flags);
-		tmp = tmp->next;
-	}
-	//		8 lines to remove
-	ft_putstr_fd("\e[32;41m", 2);
-	tmp = files;
-	while (tmp)
-	{
-		if ((!tmp->error && (tmp->name->d_name[0] != '.')) || flags->a == 1)
-			printline(tmp ,flags);
-		tmp = tmp->next;
-	}
+		lstfadd(&files, tmp2, path);
 	ft_putstr_fd("\e[0m", 2);
-	sort_name(&files, flags);
+	//sort_name(&files, flags);
 	if (flags->R)
 	{
 		ft_putstr(path);
@@ -432,20 +424,22 @@ int		list(char *path, t_flags *flags)
 	tmp = files;
 	while (tmp)
 	{
-		if ((!tmp->error && (tmp->name->d_name[0] != '.')) || flags->a == 1)
-			printline(tmp ,flags);
+		printline(tmp ,flags);
 		tmp = tmp->next;
 	}
 
 	tmp = files;
 	while (tmp && flags->R)
 	{
-		if (tmp->doss)
+		t_file *cont;
+
+		cont = tmp->content;
+		if (cont->doss)
 		{
-			if (ft_strlen(tmp->name->d_name))
+			if (ft_strlen(cont->name->d_name))
 			{
 				ft_putstr("\n");
-				list(tmppath = path_join(path, tmp->name->d_name), flags);
+				list(tmppath = path_join(path, cont->name->d_name), flags);
 				ft_strdel(&tmppath);
 			}
 		}
@@ -456,23 +450,25 @@ int		list(char *path, t_flags *flags)
 	return 0;
 }
 
-int		insp_file(t_file *file, t_flags *flags)
+int		insp_file(t_list *file, t_flags *flags)
 {
-	char *pathfile;
+	char	*pathfile;
+	t_file	*cont;
 
-	pathfile = path_join(file->path, file->name->d_name);
-	file->prop = (struct stat *)malloc(sizeof(struct stat));
-	if (lstat(pathfile, file->prop) < 0)
+	cont = file->content;
+	pathfile = path_join(cont->path, cont->name->d_name);
+	cont->prop = (struct stat *)malloc(sizeof(struct stat));
+	if (lstat(pathfile, cont->prop) < 0)
 	{
-		file->error = 1;
+		cont->error = 1;
 		return 1;
 	}
-	file->doss = 0;
-	if ((ft_strequ(file->name->d_name, "..") == 0) &&
-			(ft_strequ(file->name->d_name, ".") == 0))
-		if (S_ISDIR(file->prop->st_mode))
-			file->doss = 1;
+	cont->doss = 0;
+	if ((ft_strequ(cont->name->d_name, "..") == 0) &&
+			(ft_strequ(cont->name->d_name, ".") == 0))
+		if (S_ISDIR(cont->prop->st_mode))
+			cont->doss = 1;
 	ft_strdel(&pathfile);
-	file->error = 0;
+	cont->error = 0;
 	return 0;
 }

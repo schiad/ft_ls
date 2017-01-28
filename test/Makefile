@@ -32,7 +32,8 @@ list:
 clean:
 
 fclean:
-	rm -f inspect_file list
+	@rm -f inspect_file list
+	@echo "fclean tests files."
  
 re: fclean
 	$(MAKE) all

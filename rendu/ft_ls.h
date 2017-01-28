@@ -38,8 +38,8 @@ typedef	struct		s_file
 	int				error;
 }					t_file;
 
-t_file  *lstfadd(t_file *input, struct dirent *file, char *path);
-void    lstffree(t_file *input);
+void    lstfadd(t_list **files, struct dirent *file, char *path);
+void    lstffree(t_list *input);
 int		list(char *path, t_flags *flags);
 void    elemright(mode_t	mode);
 void    rightuser(mode_t mode);
@@ -47,10 +47,10 @@ void    rightgroup(mode_t mode);
 void    rightother(mode_t mode);
 char    *elemtype(t_file *line);
 void    elemowner(t_file *line, t_flags *flags);
-void    printline(t_file *line, t_flags *flags);
+void    printline(t_list *line, t_flags *flags);
 void	print_date(time_t date);
-void    printtotal(t_file *files, t_flags *flags);
-int		insp_file(t_file *file, t_flags *flags);
+void    printtotal(t_list *files, t_flags *flags);
+int		insp_file(t_list *file, t_flags *flags);
 void	elemname(t_file *line, t_flags *flags);
 char	*path_join(const char *str1, const char *str2);
 void	sort_name(t_file **file, t_flags *flags);

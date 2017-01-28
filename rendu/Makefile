@@ -21,5 +21,6 @@ fclean:
 	@make fclean --no-print-directory -C ./libft
 	@rm -f $(NAME)
 	@echo "ft_ls deleted :-(."
+	@make fclean --no-print-directory -C ../test
 
 re: fclean all
