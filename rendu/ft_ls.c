@@ -21,53 +21,33 @@ int	main(int argc, char **argv)
 	return 0;
 }
 
-void	sort_name(t_file **file, t_flags *flags)
+void	sort_name(t_list *file, t_flags *flags)
 {
-	t_file	*tmp[5];
-	t_file	*iter;
-	int	ok;
-	int	sort;
+	int		diff;
+	int		ok;
+	t_list	*tmp;
+	t_file	*cmp1;
+	t_file	*cmp2;
 
+	diff = 1;
 	ok = 0;
-	tmp[0] = *file;
 	while (!ok)
 	{
-		ft_putstr_fd("!ok\t", 2);
 		ok = 1;
-		iter = tmp[0];
-		while (iter->next && ok)
+		tmp = file;
+		while (tmp->next)
 		{
-			tmp[2] = iter->next->next;
-			ft_putstr_fd(iter->name->d_name, 2);
-			ft_putstr_fd("\tvs\t", 2);
-			ft_putstr_fd(iter->next->name->d_name, 2);
-			sort = ft_strcmp(iter->name->d_name, iter->next->name->d_name);
+			cmp1 = tmp->content;
+			cmp2 = tmp->next->content;
+			diff = ft_strcmp(cmp1->name->d_name, cmp2->name->d_name);
 			if (flags->r)
-				sort = -sort;
-			if (sort > 0)
+				diff = -diff;
+			if (diff > 0)
 			{
-				ft_putstr_fd("\tsort\t", 2);
-				ok = 0;
-				if (tmp[0] == iter)
-				{
-					ft_putstr_fd("first replace\n", 2);
-					tmp[0] = iter->next;
-					tmp[0]->next = iter;
-					iter->next = tmp[2];
-				}
-				else
-				{
-					tmp[3]->next = iter->next;
-					tmp[3]->next->next = iter;
-					tmp[3]->next->next->next = tmp[2];
-				}
+				tmp->content = tmp->next->content;
+				tmp->next->content = cmp1;
 			}
-			else
-			{
-				tmp[3] = iter;
-				iter = iter->next;
-			}
-			ft_putstr_fd("\n", 2);
+			tmp = tmp->next;
 		}
 	}
 }
@@ -408,7 +388,7 @@ int		list(char *path, t_flags *flags)
 	while ((tmp2 = readdir(dir)) != NULL)
 		lstfadd(&files, tmp2, path);
 	ft_putstr_fd("\e[0m", 2);
-	//sort_name(&files, flags);
+	sort_name(files, flags);
 	if (flags->R)
 	{
 		ft_putstr(path);
