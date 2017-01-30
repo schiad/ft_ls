@@ -26,8 +26,7 @@ void	sort_name(t_list *file, t_flags *flags)
 	int		diff;
 	int		ok;
 	t_list	*tmp;
-	t_file	*cmp1;
-	t_file	*cmp2;
+	t_file	*cmp[2];
 
 	diff = 1;
 	ok = 0;
@@ -37,15 +36,16 @@ void	sort_name(t_list *file, t_flags *flags)
 		tmp = file;
 		while (tmp->next)
 		{
-			cmp1 = tmp->content;
-			cmp2 = tmp->next->content;
-			diff = ft_strcmp(cmp1->name->d_name, cmp2->name->d_name);
+			cmp[0] = tmp->content;
+			cmp[1] = tmp->next->content;
+			diff = ft_strcmp(cmp[0]->name->d_name, cmp[1]->name->d_name);
 			if (flags->r)
 				diff = -diff;
 			if (diff > 0)
 			{
 				tmp->content = tmp->next->content;
-				tmp->next->content = cmp1;
+				tmp->next->content = cmp[0];
+				ok = 0;
 			}
 			tmp = tmp->next;
 		}
