@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_ls.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: schiad <marvin@42.fr>                      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2017/01/31 15:52:13 by schiad            #+#    #+#             */
+/*   Updated: 2017/01/31 17:24:02 by schiad           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include <dirent.h>
 #include "ft_ls.h"
 #include "./libft/includes/libft.h"
@@ -8,8 +20,8 @@ int	main(int argc, char **argv)
 
 	flags = (t_flags *)malloc(sizeof(t_flags));
 	flags->l = 1;
-	flags->R = 1;
-	flags->r = 0;
+	flags->bigr = 1;
+	flags->r = 1;
 	flags->a = 1;
 	flags->s = 1;
 	flags->exec = argv[0];
@@ -18,7 +30,7 @@ int	main(int argc, char **argv)
 	else
 		list(argv[1], flags);
 	ft_memdel((void **)&flags);
-	return 0;
+	return (0);
 }
 
 void	sort_name(t_list *file, t_flags *flags)
@@ -26,9 +38,8 @@ void	sort_name(t_list *file, t_flags *flags)
 	int		diff;
 	int		ok;
 	t_list	*tmp;
-	t_file	*cmp[2];
+	t_file	*sort;
 
-	diff = 1;
 	ok = 0;
 	while (!ok)
 	{
@@ -36,15 +47,14 @@ void	sort_name(t_list *file, t_flags *flags)
 		tmp = file;
 		while (tmp->next)
 		{
-			cmp[0] = tmp->content;
-			cmp[1] = tmp->next->content;
-			diff = ft_strcmp(cmp[0]->name->d_name, cmp[1]->name->d_name);
-			if (flags->r)
-				diff = -diff;
+			sort = tmp->content;
+			diff = ft_strcmp(((t_file*)tmp->content)->name->d_name,
+					((t_file*)tmp->next->content)->name->d_name);
+			diff = (flags->r) ? -diff : diff;
 			if (diff > 0)
 			{
 				tmp->content = tmp->next->content;
-				tmp->next->content = cmp[0];
+				tmp->next->content = sort;
 				ok = 0;
 			}
 			tmp = tmp->next;
@@ -56,8 +66,8 @@ char	*path_join(const char *str1, const char *str2)
 {
 	char	*tmp1;
 	char	*result;
-	int	i;
-	int	j;
+	int		i;
+	int		j;
 
 	result = ft_strnew(ft_strlen(str1) + ft_strlen(str2) + 1);
 	i = 0;
@@ -65,9 +75,7 @@ char	*path_join(const char *str1, const char *str2)
 	while (str1[i])
 	{
 		if (!(str1[i] == '/' && (str1[i + 1] == '/' || str1[i + 1] == '\0')))
-		{
 			result[j++] = str1[i];
-		}
 		i++;
 	}
 	result[j] = '/';
@@ -79,8 +87,7 @@ char	*path_join(const char *str1, const char *str2)
 		i++;
 	}
 	result[j] = '\0';
-
-	return result;
+	return (result);
 }
 
 void	lstfadd(t_list **files, struct dirent *file, char *path)
@@ -90,14 +97,13 @@ void	lstfadd(t_list **files, struct dirent *file, char *path)
 	t_file	*content;
 
 	tmp2 = *files;
-
 	tmp = ft_lstnew(NULL, 0);
 	tmp->content = (t_file *)malloc(sizeof(t_file));
 	content = tmp->content;
 	content->name = (struct dirent *)malloc(sizeof(struct dirent));
 	ft_memcpy((void *)content->name, (void *)file, sizeof(struct dirent));
 	content->path = path;
-	content->doss = 0;
+	content->dir = 0;
 	if (tmp2)
 	{
 		while (tmp2->next)
@@ -116,7 +122,6 @@ void	lstffree(t_list *input)
 
 	tmp = input;
 	tmp2 = NULL;
-
 	while (tmp)
 	{
 		tmp2 = tmp;
@@ -129,7 +134,7 @@ void	lstffree(t_list *input)
 	}
 }
 
-void	elemright(mode_t	mode)
+void	elemright(mode_t mode)
 {
 	rightuser(mode);
 	rightgroup(mode);
@@ -137,7 +142,7 @@ void	elemright(mode_t	mode)
 	ft_putchar('\t');
 }
 
-void	rightuser(mode_t	mode)
+void	rightuser(mode_t mode)
 {
 	char	str[4];
 
@@ -155,7 +160,7 @@ void	rightuser(mode_t	mode)
 	ft_putstr(str);
 }
 
-void	rightgroup(mode_t	mode)
+void	rightgroup(mode_t mode)
 {
 	char	str[4];
 
@@ -173,7 +178,7 @@ void	rightgroup(mode_t	mode)
 	ft_putstr(str);
 }
 
-void	rightother(mode_t	mode)
+void	rightother(mode_t mode)
 {
 	char	str[4];
 
@@ -191,7 +196,7 @@ void	rightother(mode_t	mode)
 	ft_putstr(str);
 }
 
-char	*elemtype(t_file	*content)
+char	*elemtype(t_file *content)
 {
 	if (S_ISREG(content->prop->st_mode))
 		return ("-");
@@ -213,7 +218,7 @@ char	*elemtype(t_file	*content)
 void	elemname(t_file *line, t_flags *flags)
 {
 	char	*pathfile;
-	char	*link;
+	char	link[1026];
 	char	*type;
 
 	type = elemtype(line);
@@ -221,21 +226,18 @@ void	elemname(t_file *line, t_flags *flags)
 	if (flags->l && type[0] == 'l')
 	{
 		pathfile = path_join(line->path, line->name->d_name);
-		link = ft_strnew(1025);
 		if (0 > readlink(pathfile, link, sizeof(link)))
 		{
 			ft_putstr_fd(flags->exec, 2);
-			ft_putstr_fd(" :", 2);
-			ft_putstr_fd("\033[31m link error ", 2);
+			ft_putstr_fd(" : link error", 2);
 			ft_putstr_fd(strerror(errno), 2);
-			ft_putstr_fd("\033[0m\n", 2);
+			ft_putstr_fd(":\n", 2);
 		}
 		else
 		{
 			ft_putstr(" -> ");
 			ft_putstr(link);
 		}
-		ft_strdel(&link);
 		ft_strdel(&pathfile);
 	}
 	ft_putchar('\n');
@@ -243,8 +245,8 @@ void	elemname(t_file *line, t_flags *flags)
 
 void	elemowner(t_file *line, t_flags *flags)
 {
-	struct passwd *usr;
-	struct group *grp;
+	struct passwd	*usr;
+	struct group	*grp;
 
 	usr = getpwuid(line->prop->st_uid);
 	grp = getgrgid(line->prop->st_gid);
@@ -260,7 +262,7 @@ void	elemowner(t_file *line, t_flags *flags)
 	ft_putchar(' ');
 }
 
-void	elemsize(t_file	*line)
+void	elemsize(t_file *line)
 {
 	if (S_ISCHR(line->prop->st_mode) || S_ISBLK(line->prop->st_mode))
 	{
@@ -276,42 +278,42 @@ void	elemsize(t_file	*line)
 	}
 }
 
+void	printerror(t_list *line, t_flags *flags)
+{
+	ft_putstr_fd(flags->exec, 2);
+	ft_putstr_fd(": cannot access ", 2);
+	ft_putstr_fd(((t_file*)line->content)->path, 2);
+	ft_putstr_fd("/", 2);
+	ft_putstr_fd(((t_file*)line->content)->name->d_name, 2);
+	ft_putstr_fd(": ", 2);
+	ft_putstr_fd(strerror(errno), 2);
+	ft_putstr_fd("\e[0m\n", 2);
+}
+
 void	printline(t_list *line, t_flags *flags)
 {
-	t_file	*cont;
-
-	cont = line->content;
-	if (cont->name->d_name[0] != '.' || flags->a == 1)
+	if (((t_file*)line->content)->name->d_name[0] != '.' || flags->a == 1)
 	{
-		if (cont->error)
-		{
-			ft_putstr_fd(flags->exec, 2);
-			ft_putstr_fd(": cannot access ", 2);
-			ft_putstr_fd(cont->path, 2);
-			ft_putstr_fd("/", 2);
-			ft_putstr_fd(cont->name->d_name, 2);
-			ft_putstr_fd(": ", 2);
-			ft_putstr_fd(strerror(errno), 2);
-			ft_putstr_fd("\e[0m\n", 2);
-		}
+		if (((t_file*)line->content)->error)
+			printerror(line, flags);
 		else
 		{
 			if (flags->s)
 			{
-				ft_putllong(cont->prop->st_blocks);
+				ft_putllong(((t_file*)line->content)->prop->st_blocks);
 				ft_putchar(' ');
 			}
 			if (flags->l)
 			{
-				ft_putstr(elemtype(cont));
-				elemright(cont->prop->st_mode);
-				ft_putnbr((int)cont->prop->st_nlink);
+				ft_putstr(elemtype(((t_file*)line->content)));
+				elemright(((t_file*)line->content)->prop->st_mode);
+				ft_putnbr((int)((t_file*)line->content)->prop->st_nlink);
 				ft_putchar(' ');
-				elemowner(cont, flags);
-				elemsize(cont);
-				print_date(cont->prop->st_mtime);
+				elemowner(((t_file*)line->content), flags);
+				elemsize(((t_file*)line->content));
+				print_date(((t_file*)line->content)->prop->st_mtime);
 			}
-			elemname(cont, flags);
+			elemname(((t_file*)line->content), flags);
 		}
 	}
 }
@@ -369,11 +371,10 @@ int		list(char *path, t_flags *flags)
 	t_list			*files;
 	DIR				*dir;
 	t_list			*tmp;
-	struct	dirent	*tmp2;
+	struct dirent	*tmp2;
 	char			*tmppath;
 
-	files	= NULL;
-
+	files = NULL;
 	dir = opendir(path);
 	if (dir == NULL)
 	{
@@ -383,43 +384,35 @@ int		list(char *path, t_flags *flags)
 		ft_putstr_fd("': ", 2);
 		ft_putstr_fd(strerror(errno), 2);
 		ft_putstr_fd("\n", 2);
-		return errno;
+		return (errno);
 	}
 	while ((tmp2 = readdir(dir)) != NULL)
 		lstfadd(&files, tmp2, path);
 	ft_putstr_fd("\e[0m", 2);
 	sort_name(files, flags);
-	if (flags->R)
+	if (flags->bigr)
 	{
 		ft_putstr(path);
 		ft_putstr(":\n");
 	}
-	tmp = files;
-	while (tmp)
-	{
-		insp_file(tmp, flags);
-		tmp = tmp->next;
-	}
+	insp_file(files, flags);
 	printtotal(files, flags);
 	tmp = files;
 	while (tmp)
 	{
-		printline(tmp ,flags);
+		printline(tmp, flags);
 		tmp = tmp->next;
 	}
-
 	tmp = files;
-	while (tmp && flags->R)
+	while (tmp && flags->bigr)
 	{
-		t_file *cont;
-
-		cont = tmp->content;
-		if (cont->doss)
+		if (((t_file*)tmp->content)->dir)
 		{
-			if (ft_strlen(cont->name->d_name))
+			if (ft_strlen(((t_file*)tmp->content)->name->d_name))
 			{
 				ft_putstr("\n");
-				list(tmppath = path_join(path, cont->name->d_name), flags);
+				list(tmppath = path_join(path,
+							((t_file*)tmp->content)->name->d_name), flags);
 				ft_strdel(&tmppath);
 			}
 		}
@@ -427,28 +420,31 @@ int		list(char *path, t_flags *flags)
 	}
 	closedir(dir);
 	lstffree(files);
-	return 0;
+	return (0);
 }
 
 int		insp_file(t_list *file, t_flags *flags)
 {
 	char	*pathfile;
-	t_file	*cont;
+	t_list	*tmp;
 
-	cont = file->content;
-	pathfile = path_join(cont->path, cont->name->d_name);
-	cont->prop = (struct stat *)malloc(sizeof(struct stat));
-	if (lstat(pathfile, cont->prop) < 0)
+	tmp = file;
+	while (tmp)
 	{
-		cont->error = 1;
-		return 1;
+		pathfile = path_join(((t_file*)tmp->content)->path,
+				((t_file*)tmp->content)->name->d_name);
+		((t_file*)tmp->content)->prop =
+			(struct stat *)malloc(sizeof(struct stat));
+		if (lstat(pathfile, ((t_file*)tmp->content)->prop) < 0)
+			((t_file*)tmp->content)->error = 1;
+		((t_file*)tmp->content)->dir = 0;
+		if ((ft_strequ(((t_file*)tmp->content)->name->d_name, "..") == 0) &&
+				(ft_strequ(((t_file*)tmp->content)->name->d_name, ".") == 0))
+			if (S_ISDIR(((t_file*)tmp->content)->prop->st_mode))
+				((t_file*)tmp->content)->dir = 1;
+		ft_strdel(&pathfile);
+		((t_file*)tmp->content)->error = 0;
+		tmp = tmp->next;
 	}
-	cont->doss = 0;
-	if ((ft_strequ(cont->name->d_name, "..") == 0) &&
-			(ft_strequ(cont->name->d_name, ".") == 0))
-		if (S_ISDIR(cont->prop->st_mode))
-			cont->doss = 1;
-	ft_strdel(&pathfile);
-	cont->error = 0;
-	return 0;
+	return (0);
 }
