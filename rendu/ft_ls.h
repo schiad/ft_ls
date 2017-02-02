@@ -64,5 +64,7 @@ int		insp_file(t_list *file, t_flags *flags);
 void	elemname(t_file *line, t_flags *flags);
 char	*path_join(const char *str1, const char *str2);
 void	sort_name(t_list *file, t_flags *flags);
+void	sort_time(t_list *file, t_flags *flags);
+int		parse_input(int argc, char **argv, t_flags *flags);
 
 #endif

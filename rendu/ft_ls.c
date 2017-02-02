@@ -10,30 +10,43 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <dirent.h>
 #include "ft_ls.h"
-#include "./libft/includes/libft.h"
 
 int	main(int argc, char **argv)
 {
 	t_flags	*flags;
 
 	flags = (t_flags *)malloc(sizeof(t_flags));
-	flags->l = 1;
-	flags->bigr = 1;
-	flags->r = 1;
-	flags->a = 1;
-	flags->s = 1;
-	flags->exec = argv[0];
-	if (argc != 2)
-		list(".", flags);
-	else
-		list(argv[1], flags);
+	parse_input(argc, argv, flags);
+	list(argv[argc - 1], flags);
 	ft_memdel((void **)&flags);
 	return (0);
 }
 
-void	sort_name(t_list *file, t_flags *flags)
+int	parse_input(int argc, char **argv, t_flags *flags)
+{
+	int	i;
+	int	j;
+
+	i = 1;
+	flags->exec = argv[0];
+	while (i < argc)
+	{
+		if (argv[i][0] == '-' && argv[i][1])
+		{
+			flags->a = (ft_strchr(argv[i], 'a')) ? 1 : 0;
+			flags->l = (ft_strchr(argv[i], 'l')) ? 1 : 0;
+			flags->r = (ft_strchr(argv[i], 'r')) ? 1 : 0;
+			flags->s = (ft_strchr(argv[i], 's')) ? 1 : 0;
+			flags->bigr = (ft_strchr(argv[i], 'R')) ? 1 : 0;
+			flags->t = (ft_strchr(argv[i], 't')) ? 1 : 0;
+		}
+		i++;
+	}
+	return (0);
+}
+
+void	sort_time(t_list *files, t_flags *flags)
 {
 	int		diff;
 	int		ok;
@@ -44,7 +57,36 @@ void	sort_name(t_list *file, t_flags *flags)
 	while (!ok)
 	{
 		ok = 1;
-		tmp = file;
+		tmp = files;
+		while (tmp->next)
+		{
+			sort = tmp->content;
+			diff = ft_strcmp(((t_file*)tmp->content)->name->d_name,
+					((t_file*)tmp->next->content)->name->d_name);
+			diff = (flags->r) ? -diff : diff;
+			if (diff > 0)
+			{
+				tmp->content = tmp->next->content;
+				tmp->next->content = sort;
+				ok = 0;
+			}
+			tmp = tmp->next;
+		}
+	}
+}
+
+void	sort_name(t_list *files, t_flags *flags)
+{
+	int		diff;
+	int		ok;
+	t_list	*tmp;
+	t_file	*sort;
+
+	ok = 0;
+	while (!ok)
+	{
+		ok = 1;
+		tmp = files;
 		while (tmp->next)
 		{
 			sort = tmp->content;
@@ -389,7 +431,6 @@ int		list(char *path, t_flags *flags)
 	while ((tmp2 = readdir(dir)) != NULL)
 		lstfadd(&files, tmp2, path);
 	ft_putstr_fd("\e[0m", 2);
-	sort_name(files, flags);
 	if (flags->bigr)
 	{
 		ft_putstr(path);
@@ -397,6 +438,7 @@ int		list(char *path, t_flags *flags)
 	}
 	insp_file(files, flags);
 	printtotal(files, flags);
+	sort_name(files, flags);
 	tmp = files;
 	while (tmp)
 	{
