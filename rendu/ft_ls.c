@@ -6,47 +6,126 @@
 /*   By: schiad <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/31 15:52:13 by schiad            #+#    #+#             */
-/*   Updated: 2017/01/31 17:24:02 by schiad           ###   ########.fr       */
+/*   Updated: 2017/02/05 19:50:55 by schiad           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+// see -d option 
+
 #include "ft_ls.h"
 
-int	main(int argc, char **argv)
+int		main(int argc, char **argv)
 {
-	t_flags	*flags;
+	t_options	*options;
 
-	flags = (t_flags *)malloc(sizeof(t_flags));
-	parse_input(argc, argv, flags);
-	list(argv[argc - 1], flags);
-	ft_memdel((void **)&flags);
+	options = (t_options *)malloc(sizeof(t_options));
+	parse_input(argc, argv, options);
+	ft_memdel((void **)&options);
 	return (0);
 }
 
-int	parse_input(int argc, char **argv, t_flags *flags)
+void	init_options(t_options *options)
 {
-	int	i;
-	int	j;
+	options->a = 0;
+	options->l = 0;
+	options->r = 0;
+	options->s = 0;
+	options->bigr = 0;
+	options->t = 0;
+}
 
+int		parse_input(int argc, char **argv, t_options *options)
+{
+	t_list	*files;
+
+	init_options(options);
+	parse_options(argc, argv, options);
+	files = parse_files(argc, argv, options);
+	inspect_type(files, options);
+	return (0);
+}
+
+void	inspect_type(t_list *files, t_options *options)
+{
+	t_list	*tmp;
+	int		dirs;
+	int		multiple;
+
+	insp_file(files, 1);
+	multiple = 0;
+	if (files && files->next)
+		multiple = 1;
+	tmp = files;
+	while (tmp)
+	{
+		if (tmp != files && ((t_file*)tmp->content)->dir)
+			ft_putstr("\n");
+		if (((t_file*)tmp->content)->dir)
+			list(((t_file*)tmp->content)->name->d_name, options, multiple);
+		if (!((t_file*)tmp->content)->dir)
+			printline(tmp, options, 1);
+		tmp = tmp->next;
+	}
+	if (!files)
+		list(".", options, 0);
+}
+
+t_list	*parse_files(int argc, char **argv, t_options *options)
+{
+	int				i;
+	t_list			*files;
+	t_list			*tmplst;
+	struct dirent	*tmpdir;
+	int				option;
+
+	files = NULL;
 	i = 1;
-	flags->exec = argv[0];
+	option = 1;
 	while (i < argc)
 	{
-		if (argv[i][0] == '-' && argv[i][1])
+		if (argv[i][0] == '-' && argv[i][1] == '-'  && argv[i][2] == '\0'
+				&& option)
+			option = 0;
+		else if (!option || argv[i][0] != '-' && argv[i][1] != '-')
 		{
-			flags->a = (ft_strchr(argv[i], 'a')) ? 1 : 0;
-			flags->l = (ft_strchr(argv[i], 'l')) ? 1 : 0;
-			flags->r = (ft_strchr(argv[i], 'r')) ? 1 : 0;
-			flags->s = (ft_strchr(argv[i], 's')) ? 1 : 0;
-			flags->bigr = (ft_strchr(argv[i], 'R')) ? 1 : 0;
-			flags->t = (ft_strchr(argv[i], 't')) ? 1 : 0;
+			tmpdir = (struct dirent *)malloc(sizeof(struct dirent));
+			ft_strcpy(tmpdir->d_name, argv[i]);
+			lstfadd(&files, tmpdir, ".");
+			option = 0;
 		}
 		i++;
+	}
+	return (files);
+}
+
+int		parse_options(int argc, char **argv, t_options *options)
+{
+	int	i;
+
+	i = 1;
+	options->exec = argv[0];
+	while (i < argc)
+	{
+		if (argv[i][1] == '-')
+			i = argc;
+		else
+		{
+			if (argv[i][0] == '-' && argv[i][1])
+			{
+				options->a = (ft_strchr(argv[i], 'a')) ? 1 : options->a;
+				options->l = (ft_strchr(argv[i], 'l')) ? 1 : options->l;
+				options->r = (ft_strchr(argv[i], 'r')) ? 1 : options->r;
+				options->s = (ft_strchr(argv[i], 's')) ? 1 : options->s;
+				options->bigr = (ft_strchr(argv[i], 'R')) ? 1 : options->bigr;
+				options->t = (ft_strchr(argv[i], 't')) ? 1 : options->t;
+			}
+			i++;
+		}
 	}
 	return (0);
 }
 
-void	sort_time(t_list *files, t_flags *flags)
+void	sort_time(t_list *files, t_options *options)
 {
 	int		diff;
 	int		ok;
@@ -63,7 +142,7 @@ void	sort_time(t_list *files, t_flags *flags)
 			sort = tmp->content;
 			diff = ft_strcmp(((t_file*)tmp->content)->name->d_name,
 					((t_file*)tmp->next->content)->name->d_name);
-			diff = (flags->r) ? -diff : diff;
+			diff = (options->r) ? -diff : diff;
 			if (diff > 0)
 			{
 				tmp->content = tmp->next->content;
@@ -75,7 +154,7 @@ void	sort_time(t_list *files, t_flags *flags)
 	}
 }
 
-void	sort_name(t_list *files, t_flags *flags)
+void	sort_name(t_list *files, t_options *options)
 {
 	int		diff;
 	int		ok;
@@ -92,7 +171,7 @@ void	sort_name(t_list *files, t_flags *flags)
 			sort = tmp->content;
 			diff = ft_strcmp(((t_file*)tmp->content)->name->d_name,
 					((t_file*)tmp->next->content)->name->d_name);
-			diff = (flags->r) ? -diff : diff;
+			diff = (options->r) ? -diff : diff;
 			if (diff > 0)
 			{
 				tmp->content = tmp->next->content;
@@ -106,7 +185,6 @@ void	sort_name(t_list *files, t_flags *flags)
 
 char	*path_join(const char *str1, const char *str2)
 {
-	char	*tmp1;
 	char	*result;
 	int		i;
 	int		j;
@@ -123,6 +201,8 @@ char	*path_join(const char *str1, const char *str2)
 	result[j] = '/';
 	j++;
 	i = 0;
+	if (str2[0] == '/' || str2[0] == '.')
+		j = 0;
 	while (str2[i])
 	{
 		result[j++] = str2[i];
@@ -257,7 +337,7 @@ char	*elemtype(t_file *content)
 	return ("U");
 }
 
-void	elemname(t_file *line, t_flags *flags)
+void	elemname(t_file *line, t_options *options)
 {
 	char	*pathfile;
 	char	link[1026];
@@ -265,12 +345,12 @@ void	elemname(t_file *line, t_flags *flags)
 
 	type = elemtype(line);
 	ft_putstr(line->name->d_name);
-	if (flags->l && type[0] == 'l')
+	if (options->l && type[0] == 'l')
 	{
 		pathfile = path_join(line->path, line->name->d_name);
 		if (0 > readlink(pathfile, link, sizeof(link)))
 		{
-			ft_putstr_fd(flags->exec, 2);
+			ft_putstr_fd(options->exec, 2);
 			ft_putstr_fd(" : link error", 2);
 			ft_putstr_fd(strerror(errno), 2);
 			ft_putstr_fd(":\n", 2);
@@ -285,7 +365,7 @@ void	elemname(t_file *line, t_flags *flags)
 	ft_putchar('\n');
 }
 
-void	elemowner(t_file *line, t_flags *flags)
+void	elemowner(t_file *line)
 {
 	struct passwd	*usr;
 	struct group	*grp;
@@ -320,10 +400,10 @@ void	elemsize(t_file *line)
 	}
 }
 
-void	printerror(t_list *line, t_flags *flags)
+void	printerror(t_list *line, t_options *options)
 {
-	ft_putstr_fd(flags->exec, 2);
-	ft_putstr_fd(": cannot access ", 2);
+	ft_putstr_fd(options->exec, 2);
+	ft_putstr_fd(": ", 2);
 	ft_putstr_fd(((t_file*)line->content)->path, 2);
 	ft_putstr_fd("/", 2);
 	ft_putstr_fd(((t_file*)line->content)->name->d_name, 2);
@@ -332,30 +412,31 @@ void	printerror(t_list *line, t_flags *flags)
 	ft_putstr_fd("\e[0m\n", 2);
 }
 
-void	printline(t_list *line, t_flags *flags)
+void	printline(t_list *line, t_options *options, int bypass)
 {
-	if (((t_file*)line->content)->name->d_name[0] != '.' || flags->a == 1)
+	if (((t_file*)line->content)->name->d_name[0] != '.' || options->a == 1 ||
+			bypass)
 	{
 		if (((t_file*)line->content)->error)
-			printerror(line, flags);
+			printerror(line, options);
 		else
 		{
-			if (flags->s)
+			if (options->s)
 			{
 				ft_putllong(((t_file*)line->content)->prop->st_blocks);
 				ft_putchar(' ');
 			}
-			if (flags->l)
+			if (options->l)
 			{
 				ft_putstr(elemtype(((t_file*)line->content)));
 				elemright(((t_file*)line->content)->prop->st_mode);
 				ft_putnbr((int)((t_file*)line->content)->prop->st_nlink);
 				ft_putchar(' ');
-				elemowner(((t_file*)line->content), flags);
+				elemowner(((t_file*)line->content));
 				elemsize(((t_file*)line->content));
 				print_date(((t_file*)line->content)->prop->st_mtime);
 			}
-			elemname(((t_file*)line->content), flags);
+			elemname(((t_file*)line->content), options);
 		}
 	}
 }
@@ -385,7 +466,7 @@ void	print_date(time_t date)
 	ft_memdel((void **)&str1);
 }
 
-void	printtotal(t_list *files, t_flags *flags)
+void	printtotal(t_list *files, t_options *options)
 {
 	t_list		*tmp;
 	long long	total;
@@ -393,13 +474,13 @@ void	printtotal(t_list *files, t_flags *flags)
 
 	tmp = files;
 	total = 0;
-	if (flags->l || flags->s)
+	if (options->l || options->s)
 	{
 		ft_putstr("total ");
 		while (tmp)
 		{
 			cont = tmp->content;
-			if (flags->a == 1 || cont->name->d_name[0] != '.')
+			if (options->a == 1 || cont->name->d_name[0] != '.')
 				total = total + cont->prop->st_blocks;
 			tmp = tmp->next;
 		}
@@ -408,7 +489,7 @@ void	printtotal(t_list *files, t_flags *flags)
 	}
 }
 
-int		list(char *path, t_flags *flags)
+int		list(char *path, t_options *options, int header)
 {
 	t_list			*files;
 	DIR				*dir;
@@ -420,10 +501,10 @@ int		list(char *path, t_flags *flags)
 	dir = opendir(path);
 	if (dir == NULL)
 	{
-		ft_putstr_fd(flags->exec, 2);
-		ft_putstr_fd(": cannot open directory '", 2);
+		ft_putstr_fd(options->exec, 2);
+		ft_putstr_fd(": ", 2);
 		ft_putstr_fd(path, 2);
-		ft_putstr_fd("': ", 2);
+		ft_putstr_fd(": ", 2);
 		ft_putstr_fd(strerror(errno), 2);
 		ft_putstr_fd("\n", 2);
 		return (errno);
@@ -431,22 +512,22 @@ int		list(char *path, t_flags *flags)
 	while ((tmp2 = readdir(dir)) != NULL)
 		lstfadd(&files, tmp2, path);
 	ft_putstr_fd("\e[0m", 2);
-	if (flags->bigr)
+	if (options->bigr || header)
 	{
 		ft_putstr(path);
 		ft_putstr(":\n");
 	}
-	insp_file(files, flags);
-	printtotal(files, flags);
-	sort_name(files, flags);
+	insp_file(files, 0);
+	printtotal(files, options);
+	sort_name(files, options);
 	tmp = files;
 	while (tmp)
 	{
-		printline(tmp, flags);
+		printline(tmp, options, 0);
 		tmp = tmp->next;
 	}
 	tmp = files;
-	while (tmp && flags->bigr)
+	while (tmp && options->bigr)
 	{
 		if (((t_file*)tmp->content)->dir)
 		{
@@ -454,7 +535,8 @@ int		list(char *path, t_flags *flags)
 			{
 				ft_putstr("\n");
 				list(tmppath = path_join(path,
-							((t_file*)tmp->content)->name->d_name), flags);
+							((t_file*)tmp->content)->name->d_name),
+						options, header);
 				ft_strdel(&tmppath);
 			}
 		}
@@ -465,11 +547,23 @@ int		list(char *path, t_flags *flags)
 	return (0);
 }
 
-int		insp_file(t_list *file, t_flags *flags)
+int		is_parent_local(char *str)
+{
+	int	result;
+
+	result = 0;
+	result += (int)ft_strequ(str, "..");
+	result += (int)ft_strequ(str, ".");
+	return (result);
+}
+
+int		insp_file(t_list *file, int bypass)
 {
 	char	*pathfile;
 	t_list	*tmp;
+	int		errors;
 
+	errors = 0;
 	tmp = file;
 	while (tmp)
 	{
@@ -477,16 +571,16 @@ int		insp_file(t_list *file, t_flags *flags)
 				((t_file*)tmp->content)->name->d_name);
 		((t_file*)tmp->content)->prop =
 			(struct stat *)malloc(sizeof(struct stat));
+		((t_file*)tmp->content)->error = 0;
 		if (lstat(pathfile, ((t_file*)tmp->content)->prop) < 0)
 			((t_file*)tmp->content)->error = 1;
 		((t_file*)tmp->content)->dir = 0;
-		if ((ft_strequ(((t_file*)tmp->content)->name->d_name, "..") == 0) &&
-				(ft_strequ(((t_file*)tmp->content)->name->d_name, ".") == 0))
+		if (is_parent_local(((t_file*)tmp->content)->name->d_name) || bypass)
 			if (S_ISDIR(((t_file*)tmp->content)->prop->st_mode))
 				((t_file*)tmp->content)->dir = 1;
 		ft_strdel(&pathfile);
-		((t_file*)tmp->content)->error = 0;
+		errors += ((t_file*)tmp->content)->error;
 		tmp = tmp->next;
 	}
-	return (0);
+	return (errors);
 }

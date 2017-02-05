@@ -1,13 +1,31 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    Makefile                                           :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: schiad <marvin@42.fr>                      +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2017/02/05 13:10:16 by schiad            #+#    #+#              #
+#    Updated: 2017/02/05 13:15:20 by schiad           ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
 
 NAME	= ft_ls
 
 LIBFT	= ./libft/libft.a
 
+FLAGS	= -Wall -Wextra -Werror
+
 all: libft $(NAME)
+
+noflags:
+	@echo "Compiling ft_ls project"
+	@gcc ft_ls.c -o $(NAME) -I./libft/includes -L./libft -lft
+	@echo "ft_ls compiled. ENJOY"
 
 $(NAME):
 	@echo "Compiling ft_ls project"
-	@gcc ft_ls.c -o $(NAME) -I./libft/includes -L./libft -lft
+	@gcc $(FLAGS) ft_ls.c -o $(NAME) -I./libft/includes -L./libft -lft
 	@echo "ft_ls compiled. ENJOY"
 
 libft: $(LIBFT)

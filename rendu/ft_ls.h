@@ -6,7 +6,7 @@
 /*   By: schiad <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/31 17:14:51 by schiad            #+#    #+#             */
-/*   Updated: 2017/01/31 17:22:13 by schiad           ###   ########.fr       */
+/*   Updated: 2017/02/05 18:37:47 by schiad           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@
 # include <errno.h>
 # include "libft.h"
 
-typedef	struct		s_flags
+typedef	struct		s_options
 {
 	int				a;
 	int				l;
@@ -36,7 +36,7 @@ typedef	struct		s_flags
 	int				bigr;
 	int				t;
 	char			*exec;
-}					t_flags;
+}					t_options;
 
 typedef struct		s_file
 {
@@ -49,22 +49,27 @@ typedef struct		s_file
 
 void	lstfadd(t_list **files, struct dirent *file, char *path);
 void	lstffree(t_list *input);
-int		list(char *path, t_flags *flags);
-void	printerror(t_list *line, t_flags *flags);
+int		list(char *path, t_options *options, int header);
+void	printerror(t_list *line, t_options *options);
 void	elemright(mode_t	mode);
 void	rightuser(mode_t mode);
 void	rightgroup(mode_t mode);
 void	rightother(mode_t mode);
 char	*elemtype(t_file *line);
-void	elemowner(t_file *line, t_flags *flags);
-void	printline(t_list *line, t_flags *flags);
+void	elemowner(t_file *line);
+void	printline(t_list *line, t_options *options, int bypass);
 void	print_date(time_t date);
-void	printtotal(t_list *files, t_flags *flags);
-int		insp_file(t_list *file, t_flags *flags);
-void	elemname(t_file *line, t_flags *flags);
+void	printtotal(t_list *files, t_options *options);
+int		insp_file(t_list *file, int bypass);
+void	elemname(t_file *line, t_options *options);
 char	*path_join(const char *str1, const char *str2);
-void	sort_name(t_list *file, t_flags *flags);
-void	sort_time(t_list *file, t_flags *flags);
-int		parse_input(int argc, char **argv, t_flags *flags);
+void	sort_name(t_list *file, t_options *options);
+void	sort_time(t_list *file, t_options *options);
+int		parse_input(int argc, char **argv, t_options *options);
+int		parse_options(int argc, char **argv, t_options *options);
+t_list	*parse_files(int argc, char **argv, t_options *options);
+void	init_options(t_options *options);
+void	inspect_type(t_list *files, t_options *options);
+int		is_parent_local(char *str);
 
 #endif
