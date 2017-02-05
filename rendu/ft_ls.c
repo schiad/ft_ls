@@ -575,7 +575,7 @@ int		insp_file(t_list *file, int bypass)
 		if (lstat(pathfile, ((t_file*)tmp->content)->prop) < 0)
 			((t_file*)tmp->content)->error = 1;
 		((t_file*)tmp->content)->dir = 0;
-		if (is_parent_local(((t_file*)tmp->content)->name->d_name) || bypass)
+		if (!is_parent_local(((t_file*)tmp->content)->name->d_name) || bypass)
 			if (S_ISDIR(((t_file*)tmp->content)->prop->st_mode))
 				((t_file*)tmp->content)->dir = 1;
 		ft_strdel(&pathfile);
