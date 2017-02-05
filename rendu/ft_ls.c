@@ -41,6 +41,8 @@ int		parse_input(int argc, char **argv, t_options *options)
 	init_options(options);
 	parse_options(argc, argv, options);
 	files = parse_files(argc, argv, options);
+	if (files)
+		sort_name(files, options);
 	inspect_type(files, options);
 	return (0);
 }
