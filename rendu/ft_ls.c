@@ -88,7 +88,8 @@ t_list	*parse_files(int argc, char **argv, t_options *options)
 		if (argv[i][0] == '-' && argv[i][1] == '-'  && argv[i][2] == '\0'
 				&& option)
 			option = 0;
-		else if (!option || argv[i][0] != '-' && argv[i][1] != '-')
+		else if (!option || argv[i][0] != '-' ||
+			(argv[i][0] == '-' && argv[i][1] == '\0'))
 		{
 			tmpdir = (struct dirent *)malloc(sizeof(struct dirent));
 			ft_strcpy(tmpdir->d_name, argv[i]);
