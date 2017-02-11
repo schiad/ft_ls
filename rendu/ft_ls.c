@@ -134,8 +134,8 @@ long	compare_time(t_list *tmp)
 	diff = ((t_file*)tmp->content)->prop->st_mtime -
 	((t_file*)tmp->next->content)->prop->st_mtime;
 	if (!diff)
-		((t_file*)tmp->content)->prop->st_mtimensec -
-		((t_file*)tmp->next->content)->prop->st_mtimensec;
+		((t_file*)tmp->content)->prop->st_mtimespec.tv_nsec -
+		((t_file*)tmp->next->content)->prop->st_mtimespec.tv_nsec;
 	return (diff);
 }
 
