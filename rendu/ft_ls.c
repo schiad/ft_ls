@@ -131,11 +131,10 @@ long	compare_time(t_list *tmp)
 {
 	long	diff;
 
-	diff = ((t_file*)tmp->content)->prop->st_mtime -
-	((t_file*)tmp->next->content)->prop->st_mtime;
+	diff = NSEC_F -NSEC_S;
 	if (!diff)
-		((t_file*)tmp->content)->prop->st_mtimespec.tv_nsec -
-		((t_file*)tmp->next->content)->prop->st_mtimespec.tv_nsec;
+		diff = ((t_file*)tmp->content)->prop->st_mtim.tv_nsec -
+		((t_file*)tmp->next->content)->prop->st_mtim.tv_nsec;
 	return (diff);
 }
 

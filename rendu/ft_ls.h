@@ -10,6 +10,16 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#ifdef __linux__
+# define NSEC_F ((t_file*)tmp->content)->prop->st_mtime
+# define NSEC_S ((t_file*)tmp->next->content)->prop->st_mtime
+#endif
+
+#if defined(__APPLE__) || defined(__MACH__)
+# define NSEC_F ((t_file*)tmp->content)->prop->st_mtimespec.tv_nsec
+# define NSEC_S ((t_file*)tmp->next->content)->prop->st_mtimespec.tv_nsec
+#endif
+
 #ifndef FT_LS_H
 # define FT_LS_H
 
