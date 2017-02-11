@@ -71,5 +71,6 @@ t_list	*parse_files(int argc, char **argv, t_options *options);
 void	init_options(t_options *options);
 void	inspect_type(t_list *files, t_options *options);
 int		is_parent_local(char *str);
+long	compare_time(t_list *tmp);
 
 #endif

@@ -94,7 +94,6 @@ t_list	*parse_files(int argc, char **argv, t_options *options)
 			tmpdir = (struct dirent *)malloc(sizeof(struct dirent));
 			ft_strcpy(tmpdir->d_name, argv[i]);
 			lstfadd(&files, tmpdir, ".");
-			option = 0;
 		}
 		i++;
 	}
@@ -128,9 +127,21 @@ int		parse_options(int argc, char **argv, t_options *options)
 	return (0);
 }
 
+long	compare_time(t_list *tmp)
+{
+	long	diff;
+
+	diff = ((t_file*)tmp->content)->prop->st_mtime -
+	((t_file*)tmp->next->content)->prop->st_mtime;
+	if (!diff)
+		((t_file*)tmp->content)->prop->st_mtimensec -
+		((t_file*)tmp->next->content)->prop->st_mtimensec;
+	return (diff);
+}
+
 void	sort_time(t_list *files, t_options *options)
 {
-	int		diff;
+	long	diff;
 	int		ok;
 	t_list	*tmp;
 	t_file	*sort;
@@ -143,9 +154,8 @@ void	sort_time(t_list *files, t_options *options)
 		while (tmp->next)
 		{
 			sort = tmp->content;
-			diff = ((t_file*)tmp->content)->prop->st_mtime -
-			((t_file*)tmp->next->content)->prop->st_mtime;
-			diff = (options->r) ? -diff : diff;
+			diff = compare_time(tmp);
+			diff = (options->r) ? diff : -diff;
 			if (diff > 0)
 			{
 				tmp->content = tmp->next->content;
@@ -407,8 +417,8 @@ void	printerror(t_list *line, t_options *options)
 {
 	ft_putstr_fd(options->exec, 2);
 	ft_putstr_fd(": ", 2);
-	ft_putstr_fd(((t_file*)line->content)->path, 2);
-	ft_putstr_fd("/", 2);
+//	ft_putstr_fd(((t_file*)line->content)->path, 2);
+//	ft_putstr_fd("/", 2);
 	ft_putstr_fd(((t_file*)line->content)->name->d_name, 2);
 	ft_putstr_fd(": ", 2);
 	ft_putstr_fd(strerror(errno), 2);
