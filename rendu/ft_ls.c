@@ -143,8 +143,8 @@ void	sort_time(t_list *files, t_options *options)
 		while (tmp->next)
 		{
 			sort = tmp->content;
-			diff = ft_strcmp(((t_file*)tmp->content)->name->d_name,
-					((t_file*)tmp->next->content)->name->d_name);
+			diff = ((t_file*)tmp->content)->prop->st_mtime -
+			((t_file*)tmp->next->content)->prop->st_mtime;
 			diff = (options->r) ? -diff : diff;
 			if (diff > 0)
 			{
@@ -522,7 +522,10 @@ int		list(char *path, t_options *options, int header)
 	}
 	insp_file(files, 0);
 	printtotal(files, options);
-	sort_name(files, options);
+	if (options->t)
+		sort_time(files, options);
+	else
+		sort_name(files, options);
 	tmp = files;
 	while (tmp)
 	{
