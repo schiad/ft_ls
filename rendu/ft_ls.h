@@ -11,8 +11,8 @@
 /* ************************************************************************** */
 
 #ifdef __linux__
-# define NSEC_F ((t_file*)tmp->content)->prop->st_mtime
-# define NSEC_S ((t_file*)tmp->next->content)->prop->st_mtime
+# define NSEC_F ((t_file*)tmp->content)->prop->st_mtim.tv_nsec
+# define NSEC_S ((t_file*)tmp->next->content)->prop->st_mtim.tv_nsec
 #endif
 
 #if defined(__APPLE__) || defined(__MACH__)

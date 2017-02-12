@@ -18,7 +18,7 @@ FLAGS	= -Wall -Wextra -Werror
 
 all: libft $(NAME)
 
-noflags:
+noflags: libft
 	@echo "Compiling ft_ls project"
 	@gcc ft_ls.c -o $(NAME) -I./libft/includes -L./libft -lft
 	@echo "ft_ls compiled. ENJOY"
