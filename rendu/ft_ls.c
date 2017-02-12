@@ -134,12 +134,7 @@ long	compare_time(t_list *tmp)
 	diff = ((t_file*)tmp->content)->prop->st_mtime -
 	((t_file*)tmp->next->content)->prop->st_mtime;
 	if (!diff)
-	{
 		diff = NSEC_F - NSEC_S;
-		ft_putstr("d= ");
-		ft_putnbr(diff);
-		ft_putstr("\n");
-	}
 	return (diff);
 }
 
