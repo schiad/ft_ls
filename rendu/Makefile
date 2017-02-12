@@ -10,22 +10,24 @@
 #                                                                              #
 # **************************************************************************** #
 
-NAME	= ft_ls
+NAME		= ft_ls
 
-LIBFT	= ./libft/libft.a
+CC			= gcc
+FLAGS		= -Wall -Wextra -Werror
 
-FLAGS	= -Wall -Wextra -Werror
+SRC_DIR		= ./sources/
+INC_DIR 	= ./includes/
+
+LIBFT		= ./libft/libft.a
+LIBFT_INC	= ./libft/includes
+LIBFT_DIR	= ./libft
 
 all: libft $(NAME)
 
-noflags: libft
-	@echo "Compiling ft_ls project"
-	@gcc ft_ls.c -o $(NAME) -I./libft/includes -L./libft -lft
-	@echo "ft_ls compiled. ENJOY"
-
 $(NAME):
 	@echo "Compiling ft_ls project"
-	@gcc $(FLAGS) ft_ls.c -o $(NAME) -I./libft/includes -L./libft -lft
+	@$(CC) $(FLAGS) $(SRC_DIR)ft_ls.c -o $(NAME) -I$(LIBFT_INC) \
+	-L$(LIBFT_DIR) -lft -Ofast
 	@echo "ft_ls compiled. ENJOY"
 
 libft: $(LIBFT)

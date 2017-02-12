@@ -12,7 +12,7 @@
 
 // see -d option 
 
-#include "ft_ls.h"
+#include "../includes/ft_ls.h"
 
 int		main(int argc, char **argv)
 {
@@ -298,7 +298,7 @@ void	elemright(mode_t mode)
 	rightuser(mode);
 	rightgroup(mode);
 	rightother(mode);
-	ft_putchar('\t');
+	ft_putchar(' ');
 }
 
 void	rightuser(mode_t mode)
@@ -434,7 +434,7 @@ void	elemsize(t_file *line)
 	else
 	{
 		ft_putllong(line->prop->st_size);
-		ft_putchar('\t');
+		ft_putchar(' ');
 	}
 }
 
