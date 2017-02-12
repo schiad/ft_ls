@@ -77,7 +77,7 @@ void	sort_name(t_list *file, t_options *options);
 void	sort_time(t_list *file, t_options *options);
 int		parse_input(int argc, char **argv, t_options *options);
 int		parse_options(int argc, char **argv, t_options *options);
-t_list	*parse_files(int argc, char **argv, t_options *options);
+t_list	*parse_files(int argc, char **argv);
 void	init_options(t_options *options);
 void	inspect_type(t_list *files, t_options *options);
 int		is_parent_local(char *str);

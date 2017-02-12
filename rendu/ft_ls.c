@@ -39,8 +39,9 @@ int		parse_input(int argc, char **argv, t_options *options)
 	t_list	*files;
 
 	init_options(options);
-	parse_options(argc, argv, options);
-	files = parse_files(argc, argv, options);
+	if (parse_options(argc, argv, options))
+		return (1);
+	files = parse_files(argc, argv);
 	if (files)
 		sort_name(files, options);
 	inspect_type(files, options);
@@ -50,7 +51,6 @@ int		parse_input(int argc, char **argv, t_options *options)
 void	inspect_type(t_list *files, t_options *options)
 {
 	t_list	*tmp;
-	int		dirs;
 	int		multiple;
 
 	insp_file(files, 1);
@@ -72,11 +72,10 @@ void	inspect_type(t_list *files, t_options *options)
 		list(".", options, 0);
 }
 
-t_list	*parse_files(int argc, char **argv, t_options *options)
+t_list	*parse_files(int argc, char **argv)
 {
 	int				i;
 	t_list			*files;
-	t_list			*tmplst;
 	struct dirent	*tmpdir;
 	int				option;
 
@@ -100,11 +99,33 @@ t_list	*parse_files(int argc, char **argv, t_options *options)
 	return (files);
 }
 
-int		parse_options(int argc, char **argv, t_options *options)
+int		exist_option(char *option, char *exec)
 {
 	int	i;
 
 	i = 1;
+	while (option[i])
+	{
+		if (!ft_strchr("alrsRt", option[i]))
+			{
+				ft_putstr(exec);
+				ft_putstr(": illegal option -- ");
+				ft_putchar(option[i]);
+				ft_putstr("\nusage : ft_ls [-Ralrst] [file ...]\n");
+				return (1);
+			}
+		i++;
+	}
+	return (0);
+}
+
+int		parse_options(int argc, char **argv, t_options *options)
+{
+	int	i;
+	int	error;
+
+	i = 1;
+	error = 0;
 	options->exec = argv[0];
 	while (i < argc)
 	{
@@ -112,8 +133,9 @@ int		parse_options(int argc, char **argv, t_options *options)
 			i = argc;
 		else
 		{
-			if (argv[i][0] == '-' && argv[i][1])
+			if (argv[i][0] == '-' && argv[i][1] && !error)
 			{
+				error += exist_option(argv[i], argv[0]);
 				options->a = (ft_strchr(argv[i], 'a')) ? 1 : options->a;
 				options->l = (ft_strchr(argv[i], 'l')) ? 1 : options->l;
 				options->r = (ft_strchr(argv[i], 'r')) ? 1 : options->r;
@@ -124,7 +146,7 @@ int		parse_options(int argc, char **argv, t_options *options)
 			i++;
 		}
 	}
-	return (0);
+	return (error);
 }
 
 long	compare_time(t_list *tmp)
@@ -135,6 +157,9 @@ long	compare_time(t_list *tmp)
 	((t_file*)tmp->next->content)->prop->st_mtime;
 	if (!diff)
 		diff = NSEC_F - NSEC_S;
+	if (!diff)
+		diff = ft_strcmp(((t_file*)tmp->content)->name->d_name,
+		((t_file*)tmp->next->content)->name->d_name);
 	return (diff);
 }
 
@@ -359,6 +384,7 @@ void	elemname(t_file *line, t_options *options)
 	ft_putstr(line->name->d_name);
 	if (options->l && type[0] == 'l')
 	{
+		ft_memset(link, '\0', 1026);
 		pathfile = path_join(line->path, line->name->d_name);
 		if (0 > readlink(pathfile, link, sizeof(link)))
 		{
@@ -416,8 +442,6 @@ void	printerror(t_list *line, t_options *options)
 {
 	ft_putstr_fd(options->exec, 2);
 	ft_putstr_fd(": ", 2);
-//	ft_putstr_fd(((t_file*)line->content)->path, 2);
-//	ft_putstr_fd("/", 2);
 	ft_putstr_fd(((t_file*)line->content)->name->d_name, 2);
 	ft_putstr_fd(": ", 2);
 	ft_putstr_fd(strerror(errno), 2);
