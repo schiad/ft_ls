@@ -6,7 +6,7 @@
 /*   By: schiad <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/31 17:14:51 by schiad            #+#    #+#             */
-/*   Updated: 2017/02/18 18:11:44 by schiad           ###   ########.fr       */
+/*   Updated: 2017/02/18 20:31:53 by schiad           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,50 +58,42 @@ typedef struct		s_file
 	int				error;
 }					t_file;
 
-//					prosses
-int					list(char *path, t_options *options, int header);
-void				printline(t_list *line, t_options *options, int bypass);
-
-//					right_print
-void				rightuser(mode_t mode);
-void				rightgroup(mode_t mode);
-void				rightother(mode_t mode);
-
-//					elem_help
-void				elemright(mode_t mode);
-char				*elemtype(t_file *line);
-void				elemowner(t_file *line);
-void				elemname(t_file *line, t_options *options);
-
-//					lst_help
-void				lstfadd(t_list **files, struct dirent *file, char *path);
-void				lstffree(t_list *input);
-int					insp_file(t_list *file, int bypass);
-
-//					preprosess2
+int					parse_options(int argc, char **argv, t_options *options);
+t_list				*parse_files(int argc, char **argv);
+int					parse_input(int argc, char **argv, t_options *options);
+void				parse_links(t_list *line, t_options *options);
 void				inspect_type(t_list *files, t_options *options);
 void				init_options(t_options *options);
-
-//					print_prepros
+int					list(char *path, t_options *options, int header);
+void				printline(t_list *line, t_options *options, int bypass);
+void				call_recursif(t_list *files, t_options *options,
+		int header);
+void				printline(t_list *line, t_options *options, int bypass);
 void				printerror(t_list *line, t_options *options);
 void				print_date(time_t date);
 void				printtotal(t_list *files, t_options *options);
 void				print_link_error(char *exec, char *name);
 void				printdirerror(char *exec, char *path);
-
-//					help
+void				elemright(mode_t mode);
+char				*elemtype(t_file *line);
+void				elemowner(t_file *line);
+void				elemname(t_file *line, t_options *options);
+void				rightuser(mode_t mode);
+void				rightgroup(mode_t mode);
+void				rightother(mode_t mode);
+void				print_elems(t_list *files, t_options *options,
+		int mult);
+void				print_list(t_list *files, t_options *options,
+		int header);
+int					exist_option(char *option, char *exec);
+int					insp_file(t_list *file, int bypass);
+void				lstfadd(t_list **files, struct dirent *file, char *path);
+void				lstffree(t_list *input);
+void				elemsize(t_file *line);
+long				compare_time(t_list *tmp);
+int					is_parent_local(char *str);
 char				*path_join(const char *str1, const char *str2);
 void				sort_name(t_list *file, t_options *options);
 void				sort_time(t_list *file, t_options *options);
-int					is_parent_local(char *str);
-long				compare_time(t_list *tmp);
-
-//					preprosess
-t_list				*parse_files(int argc, char **argv);
-int					parse_input(int argc, char **argv, t_options *options);
-int					parse_options(int argc, char **argv, t_options *options);
-void				parse_links(t_list *line, t_options *options);
-void				call_recursif(t_list *files, t_options *options,
-		int header);
 
 #endif

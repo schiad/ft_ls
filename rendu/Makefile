@@ -6,7 +6,7 @@
 #    By: schiad <marvin@42.fr>                      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2017/02/05 13:10:16 by schiad            #+#    #+#              #
-#    Updated: 2017/02/18 10:13:58 by schiad           ###   ########.fr        #
+#    Updated: 2017/02/18 20:29:48 by schiad           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,6 +17,14 @@ FLAGS		= -Wall -Wextra -Werror
 
 SRC_DIR		= ./sources/
 INC_DIR 	= ./includes/
+SRC			= $(SRC_DIR)ft_ls.c\
+			  $(SRC_DIR)elem_functions.c\
+			  $(SRC_DIR)help.c\
+			  $(SRC_DIR)init.c\
+			  $(SRC_DIR)list_help.c\
+			  $(SRC_DIR)parse_input.c\
+			  $(SRC_DIR)print.c\
+			  $(SRC_DIR)right_print.c
 
 LIBFT		= ./libft/libft.a
 LIBFT_INC	= ./libft/includes
@@ -26,8 +34,9 @@ all: libft $(NAME)
 
 $(NAME):
 	@echo "Compiling ft_ls project"
-	@$(CC) $(FLAGS) $(SRC_DIR)ft_ls.c -o $(NAME) -I$(LIBFT_INC) \
-	-L$(LIBFT_DIR) -lft -Ofast
+	@cd $(SRC_DIR)
+	@$(CC) $(FLAGS) $(SRC) -o $(NAME) -I$(LIBFT_INC) \
+	-L$(LIBFT_DIR) -lft
 	@echo "ft_ls compiled. ENJOY"
 
 libft: $(LIBFT)
