@@ -6,7 +6,7 @@
 /*   By: schiad <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/31 17:14:51 by schiad            #+#    #+#             */
-/*   Updated: 2017/02/05 18:37:47 by schiad           ###   ########.fr       */
+/*   Updated: 2017/02/18 12:41:24 by schiad           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,5 +82,7 @@ void	init_options(t_options *options);
 void	inspect_type(t_list *files, t_options *options);
 int		is_parent_local(char *str);
 long	compare_time(t_list *tmp);
+void	parse_links(t_list *line, t_options *options);
+void	print_link_error(char *exec, char *name);
 
 #endif

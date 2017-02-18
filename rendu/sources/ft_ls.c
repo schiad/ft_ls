@@ -6,7 +6,7 @@
 /*   By: schiad <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/31 15:52:13 by schiad            #+#    #+#             */
-/*   Updated: 2017/02/05 19:50:55 by schiad           ###   ########.fr       */
+/*   Updated: 2017/02/18 12:47:48 by schiad           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,7 @@ t_list	*parse_files(int argc, char **argv)
 	option = 1;
 	while (i < argc)
 	{
-		if (argv[i][0] == '-' && argv[i][1] == '-'  && argv[i][2] == '\0'
+		if (argv[i][0] == '-' && argv[i][1] == '-' && argv[i][2] == '\0'
 				&& option)
 			option = 0;
 		else if (!option || argv[i][0] != '-' ||
@@ -107,13 +107,13 @@ int		exist_option(char *option, char *exec)
 	while (option[i])
 	{
 		if (!ft_strchr("alrsRt", option[i]))
-			{
-				ft_putstr(exec);
-				ft_putstr(": illegal option -- ");
-				ft_putchar(option[i]);
-				ft_putstr("\nusage : ft_ls [-Ralrst] [file ...]\n");
-				return (1);
-			}
+		{
+			ft_putstr(exec);
+			ft_putstr(": illegal option -- ");
+			ft_putchar(option[i]);
+			ft_putstr("\nusage : ft_ls [-Ralrst] [file ...]\n");
+			return (1);
+		}
 		i++;
 	}
 	return (0);
@@ -124,10 +124,10 @@ int		parse_options(int argc, char **argv, t_options *options)
 	int	i;
 	int	error;
 
-	i = 1;
+	i = 0;
 	error = 0;
 	options->exec = argv[0];
-	while (i < argc)
+	while (++i < argc)
 	{
 		if (argv[i][1] == '-')
 			i = argc;
@@ -143,7 +143,6 @@ int		parse_options(int argc, char **argv, t_options *options)
 				options->bigr = (ft_strchr(argv[i], 'R')) ? 1 : options->bigr;
 				options->t = (ft_strchr(argv[i], 't')) ? 1 : options->t;
 			}
-			i++;
 		}
 	}
 	return (error);
@@ -525,6 +524,44 @@ void	printtotal(t_list *files, t_options *options)
 	}
 }
 
+void	print_link_error(char *exec, char *name)
+{
+	ft_putstr_fd(exec, 2);
+	ft_putstr_fd(" : link error ", 2);
+	ft_putstr_fd(name, 2);
+	ft_putstr_fd(" : ", 2);
+	ft_putstr_fd(strerror(errno), 2);
+	ft_putstr_fd("\n", 2);
+}
+
+void	parse_links(t_list *line, t_options *options)
+{
+	t_list	*tmp;
+	char	*type;
+	char	link[1026];
+	char	*pathfile;
+
+	tmp = line;
+	if (options->l)
+		while (tmp)
+		{
+			type = elemtype(((t_file*)tmp->content));
+			if (type[0] == 'l')
+			{
+				ft_memset(link, '\0', 1026);
+				pathfile = path_join(((t_file*)tmp->content)->path,
+						((t_file*)tmp->content)->name->d_name);
+				if (0 > readlink(pathfile, link, sizeof(link)))
+				{
+					print_link_error(options->exec,
+							((t_file*)tmp->content)->name->d_name);
+				}
+				ft_strdel(&pathfile);
+			}
+			tmp = tmp->next;
+		}
+}
+
 int		list(char *path, t_options *options, int header)
 {
 	t_list			*files;
@@ -555,6 +592,7 @@ int		list(char *path, t_options *options, int header)
 	}
 	insp_file(files, 0);
 	printtotal(files, options);
+	parse_links(files, options);
 	if (options->t)
 		sort_time(files, options);
 	else
