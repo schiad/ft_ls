@@ -6,7 +6,7 @@
 /*   By: schiad <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/31 15:52:13 by schiad            #+#    #+#             */
-/*   Updated: 2017/02/18 13:46:41 by schiad           ###   ########.fr       */
+/*   Updated: 2017/02/18 14:15:24 by schiad           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -441,8 +441,7 @@ void	printerror(t_list *line, t_options *options)
 	ft_putstr_fd(": ", 2);
 	ft_putstr_fd(((t_file*)line->content)->name->d_name, 2);
 	ft_putstr_fd(": ", 2);
-	ft_putstr_fd(strerror(errno), 2);
-	ft_putstr_fd("\e[0m\n", 2);
+	ft_putstr_fd("\n", 2);
 }
 
 void	printline(t_list *line, t_options *options, int bypass)
@@ -646,7 +645,7 @@ int		insp_file(t_list *file, int bypass)
 		((t_file*)tmp->content)->prop =
 			(struct stat *)malloc(sizeof(struct stat));
 		((t_file*)tmp->content)->error = 0;
-		if (stat(pathfile, ((t_file*)tmp->content)->prop) < 0)
+		if (lstat(pathfile, ((t_file*)tmp->content)->prop) < 0)
 			((t_file*)tmp->content)->error = 1;
 		((t_file*)tmp->content)->dir = 0;
 		if (!is_parent_local(((t_file*)tmp->content)->name->d_name) || bypass)
