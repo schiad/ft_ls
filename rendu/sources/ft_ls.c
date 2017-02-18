@@ -6,11 +6,9 @@
 /*   By: schiad <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/31 15:52:13 by schiad            #+#    #+#             */
-/*   Updated: 2017/02/18 12:47:48 by schiad           ###   ########.fr       */
+/*   Updated: 2017/02/18 13:46:41 by schiad           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-// see -d option 
 
 #include "../includes/ft_ls.h"
 
@@ -237,7 +235,7 @@ char	*path_join(const char *str1, const char *str2)
 	result[j] = '/';
 	j++;
 	i = 0;
-	if (str2[0] == '/' || str2[0] == '.')
+	if (str2[0] == '/')
 		j = 0;
 	while (str2[i])
 	{
@@ -584,7 +582,6 @@ int		list(char *path, t_options *options, int header)
 	}
 	while ((tmp2 = readdir(dir)) != NULL)
 		lstfadd(&files, tmp2, path);
-	ft_putstr_fd("\e[0m", 2);
 	if (options->bigr || header)
 	{
 		ft_putstr(path);
@@ -649,7 +646,7 @@ int		insp_file(t_list *file, int bypass)
 		((t_file*)tmp->content)->prop =
 			(struct stat *)malloc(sizeof(struct stat));
 		((t_file*)tmp->content)->error = 0;
-		if (lstat(pathfile, ((t_file*)tmp->content)->prop) < 0)
+		if (stat(pathfile, ((t_file*)tmp->content)->prop) < 0)
 			((t_file*)tmp->content)->error = 1;
 		((t_file*)tmp->content)->dir = 0;
 		if (!is_parent_local(((t_file*)tmp->content)->name->d_name) || bypass)
