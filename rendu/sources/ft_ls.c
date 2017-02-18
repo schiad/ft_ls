@@ -6,7 +6,7 @@
 /*   By: schiad <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/31 15:52:13 by schiad            #+#    #+#             */
-/*   Updated: 2017/02/18 14:35:47 by schiad           ###   ########.fr       */
+/*   Updated: 2017/02/18 17:49:18 by schiad           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,31 @@ int		parse_input(int argc, char **argv, t_options *options)
 	return (0);
 }
 
+void	print_elems(t_list *files, t_options *options, int mult)
+{
+	t_list	*tmp;
+
+	tmp = files;
+	while (tmp)
+	{
+		if (!((t_file*)tmp->content)->dir &&
+				!((t_file*)tmp->content)->error)
+			printline(tmp, options, 1);
+		tmp = tmp->next;
+	}
+	tmp = files;
+	while (tmp)
+	{
+		if (tmp != files && ((t_file*)tmp->content)->dir)
+			ft_putstr("\n");
+		if (((t_file*)tmp->content)->dir &&
+				!((t_file*)tmp->content)->error)
+			list(((t_file*)tmp->content)->name->d_name,
+					options, mult);
+		tmp = tmp->next;
+	}
+}
+
 void	inspect_type(t_list *files, t_options *options)
 {
 	t_list	*tmp;
@@ -58,14 +83,11 @@ void	inspect_type(t_list *files, t_options *options)
 	tmp = files;
 	while (tmp)
 	{
-		if (tmp != files && ((t_file*)tmp->content)->dir)
-			ft_putstr("\n");
-		if (((t_file*)tmp->content)->dir)
-			list(((t_file*)tmp->content)->name->d_name, options, multiple);
-		if (!((t_file*)tmp->content)->dir)
-			printline(tmp, options, 1);
+		if (((t_file*)tmp->content)->error)
+			printerror(tmp, options);
 		tmp = tmp->next;
 	}
+	print_elems(files, options, multiple);
 	if (!files)
 		list(".", options, 0);
 }
@@ -383,14 +405,7 @@ void	elemname(t_file *line, t_options *options)
 	{
 		ft_memset(link, '\0', 1026);
 		pathfile = path_join(line->path, line->name->d_name);
-		if (0 > readlink(pathfile, link, sizeof(link)))
-		{
-			ft_putstr_fd(options->exec, 2);
-			ft_putstr_fd(" : link error", 2);
-			ft_putstr_fd(strerror(errno), 2);
-			ft_putstr_fd(":\n", 2);
-		}
-		else
+		if (0 <= readlink(pathfile, link, sizeof(link)))
 		{
 			ft_putstr(" -> ");
 			ft_putstr(link);
@@ -560,33 +575,43 @@ void	parse_links(t_list *line, t_options *options)
 		}
 }
 
-int		list(char *path, t_options *options, int header)
+void	printdirerror(char *exec, char *path)
 {
-	t_list			*files;
-	DIR				*dir;
-	t_list			*tmp;
-	struct dirent	*tmp2;
-	char			*tmppath;
+	ft_putstr_fd(exec, 2);
+	ft_putstr_fd(": ", 2);
+	ft_putstr_fd(path, 2);
+	ft_putstr_fd(": ", 2);
+	ft_putstr_fd(strerror(errno), 2);
+	ft_putstr_fd("\n", 2);
+}
 
-	files = NULL;
-	dir = opendir(path);
-	if (dir == NULL)
+void	call_recursif(t_list *files, t_options *options, int header)
+{
+	char	*tmppath;
+	t_list	*tmp;
+
+	tmp = files;
+	while (tmp && options->bigr)
 	{
-		ft_putstr_fd(options->exec, 2);
-		ft_putstr_fd(": ", 2);
-		ft_putstr_fd(path, 2);
-		ft_putstr_fd(": ", 2);
-		ft_putstr_fd(strerror(errno), 2);
-		ft_putstr_fd("\n", 2);
-		return (errno);
+		if (((t_file*)tmp->content)->dir)
+		{
+			if (ft_strlen(((t_file*)tmp->content)->name->d_name))
+			{
+				ft_putstr("\n");
+				list(tmppath = path_join(((t_file*)tmp->content)->path,
+							((t_file*)tmp->content)->name->d_name),
+						options, header);
+				ft_strdel(&tmppath);
+			}
+		}
+		tmp = tmp->next;
 	}
-	while ((tmp2 = readdir(dir)) != NULL)
-		lstfadd(&files, tmp2, path);
-	if (options->bigr || header)
-	{
-		ft_putstr(path);
-		ft_putstr(":\n");
-	}
+}
+
+void	print_list(t_list *files, t_options *options, int header)
+{
+	t_list			*tmp;
+
 	insp_file(files, 0);
 	printtotal(files, options);
 	parse_links(files, options);
@@ -600,22 +625,30 @@ int		list(char *path, t_options *options, int header)
 		printline(tmp, options, 0);
 		tmp = tmp->next;
 	}
-	tmp = files;
-	while (tmp && options->bigr)
+	call_recursif(files, options, header);
+}
+
+int		list(char *path, t_options *options, int header)
+{
+	t_list			*files;
+	DIR				*dir;
+	struct dirent	*tmp2;
+
+	files = NULL;
+	dir = opendir(path);
+	if (dir == NULL)
 	{
-		if (((t_file*)tmp->content)->dir)
-		{
-			if (ft_strlen(((t_file*)tmp->content)->name->d_name))
-			{
-				ft_putstr("\n");
-				list(tmppath = path_join(path,
-							((t_file*)tmp->content)->name->d_name),
-						options, header);
-				ft_strdel(&tmppath);
-			}
-		}
-		tmp = tmp->next;
+		printdirerror(options->exec, path);
+		return (0);
 	}
+	while ((tmp2 = readdir(dir)) != NULL)
+		lstfadd(&files, tmp2, path);
+	if (options->bigr || header)
+	{
+		ft_putstr(path);
+		ft_putstr(":\n");
+	}
+	print_list(files, options, header);
 	closedir(dir);
 	lstffree(files);
 	return (0);
