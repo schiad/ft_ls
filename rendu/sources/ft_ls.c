@@ -6,7 +6,7 @@
 /*   By: schiad <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/31 15:52:13 by schiad            #+#    #+#             */
-/*   Updated: 2017/02/18 14:15:24 by schiad           ###   ########.fr       */
+/*   Updated: 2017/02/18 14:35:47 by schiad           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -441,6 +441,7 @@ void	printerror(t_list *line, t_options *options)
 	ft_putstr_fd(": ", 2);
 	ft_putstr_fd(((t_file*)line->content)->name->d_name, 2);
 	ft_putstr_fd(": ", 2);
+	ft_putstr_fd(((t_file*)line->content)->str_error, 2);
 	ft_putstr_fd("\n", 2);
 }
 
@@ -647,6 +648,7 @@ int		insp_file(t_list *file, int bypass)
 		((t_file*)tmp->content)->error = 0;
 		if (lstat(pathfile, ((t_file*)tmp->content)->prop) < 0)
 			((t_file*)tmp->content)->error = 1;
+		((t_file*)tmp->content)->str_error = strerror(errno);
 		((t_file*)tmp->content)->dir = 0;
 		if (!is_parent_local(((t_file*)tmp->content)->name->d_name) || bypass)
 			if (S_ISDIR(((t_file*)tmp->content)->prop->st_mode))

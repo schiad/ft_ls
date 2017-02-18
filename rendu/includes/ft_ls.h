@@ -6,7 +6,7 @@
 /*   By: schiad <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/31 17:14:51 by schiad            #+#    #+#             */
-/*   Updated: 2017/02/18 14:08:47 by schiad           ###   ########.fr       */
+/*   Updated: 2017/02/18 14:33:35 by schiad           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,7 @@ typedef struct		s_file
 	struct dirent	*name;
 	int				dir;
 	char			*path;
+	char			*str_error;
 	int				error;
 }					t_file;
 
