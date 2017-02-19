@@ -6,7 +6,7 @@
 #    By: schiad <marvin@42.fr>                      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2017/02/05 13:10:16 by schiad            #+#    #+#              #
-#    Updated: 2017/02/19 12:03:00 by schiad           ###   ########.fr        #
+#    Updated: 2017/02/19 13:55:51 by schiad           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -29,9 +29,9 @@ LIBFT		= ./libft/libft.a
 LIBFT_INC	= ./libft/includes
 LIBFT_DIR	= ./libft
 
-all: libft $(NAME)
+all: $(NAME)
 
-$(NAME):
+$(NAME): libft
 	@echo "Compiling ft_ls project"
 	@cd $(SRC_DIR)
 	@$(CC) $(FLAGS) $(SRC) -o $(NAME) -I$(LIBFT_INC) \
@@ -49,6 +49,9 @@ fclean:
 	@make fclean --no-print-directory -C ./libft
 	@rm -f $(NAME)
 	@echo "ft_ls deleted :-(."
-	@make fclean --no-print-directory -C ../test
+
+clean:
+	@echo "Call LIBFT to clean."
+	@make clean --no-print-directory -C ./libft
 
 re: fclean all

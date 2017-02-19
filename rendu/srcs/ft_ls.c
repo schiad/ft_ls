@@ -6,7 +6,7 @@
 /*   By: schiad <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/18 18:56:59 by schiad            #+#    #+#             */
-/*   Updated: 2017/02/19 12:34:56 by schiad           ###   ########.fr       */
+/*   Updated: 2017/02/19 18:16:02 by schiad           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ int		main(int argc, char **argv)
 	t_options	*options;
 	int			ret;
 
-	options = (t_options *)malloc(sizeof(t_options));
+	(options = (t_options *)ft_memalloc(sizeof(t_options))) ? exit() : 1;
 	ret = parse_input(argc, argv, options);
 	ft_memdel((void **)&options);
 	return (ret);
@@ -56,11 +56,17 @@ void	call_recursif(t_list *files, t_options *options, int header)
 {
 	char	*tmppath;
 	t_list	*tmp;
+	char	*name;
+	int		ok;
 
 	tmp = files;
 	while (tmp && options->bigr)
 	{
-		if (((t_file*)tmp->content)->dir)
+		ok = 0;
+		name = ((t_file*)tmp->content)->name->d_name;
+		if (name[0] != '.' || options->a)
+			ok = 1;
+		if (((t_file*)tmp->content)->dir && ok)
 		{
 			if (ft_strlen(((t_file*)tmp->content)->name->d_name))
 			{
@@ -90,12 +96,12 @@ int		list(char *path, t_options *options, int header)
 	}
 	while ((tmp2 = readdir(dir)) != NULL)
 		lstfadd(&files, tmp2, path);
-	if (options->bigr || header)
+	if ((options->bigr || header) && header > 0)
 	{
 		ft_putstr(path);
 		ft_putstr(":\n");
 	}
-	print_list(files, options, header);
+	print_list(files, options, 1);
 	closedir(dir);
 	lstffree(files);
 	return (0);

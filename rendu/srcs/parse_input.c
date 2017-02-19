@@ -6,7 +6,7 @@
 /*   By: schiad <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/18 18:59:13 by schiad            #+#    #+#             */
-/*   Updated: 2017/02/19 12:35:09 by schiad           ###   ########.fr       */
+/*   Updated: 2017/02/19 13:47:32 by schiad           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ void	inspect_type(t_list *files, t_options *options)
 	}
 	print_elems(files, options, multiple);
 	if (!files)
-		list(".", options, 0);
+		list(".", options, -1);
 }
 
 t_list	*parse_files(int argc, char **argv)
