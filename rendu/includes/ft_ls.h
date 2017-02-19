@@ -6,7 +6,7 @@
 /*   By: schiad <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/01/31 17:14:51 by schiad            #+#    #+#             */
-/*   Updated: 2017/02/18 20:31:53 by schiad           ###   ########.fr       */
+/*   Updated: 2017/02/19 12:15:37 by schiad           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,8 @@
 # endif
 
 # if defined(__APPLE__) || defined(__MACH__)
-#  define NSEC_F ((t_file*)tmp->content)->prop->st_mtimespec.tv_nsec
-#  define NSEC_S ((t_file*)tmp->next->content)->prop->st_mtimespec.tv_nsec
+#  define NSEC_S ((t_file*)tmp->content)->prop->st_mtimespec.tv_nsec
+#  define NSEC_F ((t_file*)tmp->next->content)->prop->st_mtimespec.tv_nsec
 # endif
 
 # include <grp.h>

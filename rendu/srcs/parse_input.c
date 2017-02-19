@@ -6,7 +6,7 @@
 /*   By: schiad <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/18 18:59:13 by schiad            #+#    #+#             */
-/*   Updated: 2017/02/18 18:59:30 by schiad           ###   ########.fr       */
+/*   Updated: 2017/02/19 12:35:09 by schiad           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ int		parse_input(int argc, char **argv, t_options *options)
 	t_list	*files;
 
 	init_options(options);
-	if (parse_options(argc, argv, options))
+	if (parse_options(argc, argv, options) > 0)
 		return (1);
 	files = parse_files(argc, argv);
 	if (files)
@@ -88,9 +88,9 @@ int		parse_options(int argc, char **argv, t_options *options)
 			i = argc;
 		else
 		{
-			if (argv[i][0] == '-' && argv[i][1] && !error)
+			if (argv[i][0] == '-' && argv[i][1] && error == 0)
 			{
-				error += exist_option(argv[i], argv[0]);
+				error = exist_option(argv[i], argv[0]);
 				options->a = (ft_strchr(argv[i], 'a')) ? 1 : options->a;
 				options->l = (ft_strchr(argv[i], 'l')) ? 1 : options->l;
 				options->r = (ft_strchr(argv[i], 'r')) ? 1 : options->r;

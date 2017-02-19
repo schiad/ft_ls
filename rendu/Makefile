@@ -6,7 +6,7 @@
 #    By: schiad <marvin@42.fr>                      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2017/02/05 13:10:16 by schiad            #+#    #+#              #
-#    Updated: 2017/02/18 20:29:48 by schiad           ###   ########.fr        #
+#    Updated: 2017/02/19 12:03:00 by schiad           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,8 +15,7 @@ NAME		= ft_ls
 CC			= gcc
 FLAGS		= -Wall -Wextra -Werror
 
-SRC_DIR		= ./sources/
-INC_DIR 	= ./includes/
+SRC_DIR		= ./srcs/
 SRC			= $(SRC_DIR)ft_ls.c\
 			  $(SRC_DIR)elem_functions.c\
 			  $(SRC_DIR)help.c\

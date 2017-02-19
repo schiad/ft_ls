@@ -6,7 +6,7 @@
 /*   By: schiad <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/18 18:30:53 by schiad            #+#    #+#             */
-/*   Updated: 2017/02/18 18:39:11 by schiad           ###   ########.fr       */
+/*   Updated: 2017/02/19 12:27:02 by schiad           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,9 @@ long	compare_time(t_list *tmp)
 {
 	long	diff;
 
-	diff = ((t_file*)tmp->content)->prop->st_mtime -
-	((t_file*)tmp->next->content)->prop->st_mtime;
+	diff = 0;
+	diff = ((t_file*)tmp->next->content)->prop->st_mtime -
+	((t_file*)tmp->content)->prop->st_mtime;
 	if (!diff)
 		diff = NSEC_F - NSEC_S;
 	if (!diff)
@@ -110,7 +111,7 @@ void	sort_time(t_list *files, t_options *options)
 		{
 			sort = tmp->content;
 			diff = compare_time(tmp);
-			diff = (options->r) ? diff : -diff;
+			diff = (options->r) ? -diff : diff;
 			if (diff > 0)
 			{
 				tmp->content = tmp->next->content;

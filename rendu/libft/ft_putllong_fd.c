@@ -6,7 +6,7 @@
 /*   By: schiad <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/11/29 19:58:49 by schiad            #+#    #+#             */
-/*   Updated: 2016/03/21 10:27:21 by schiad           ###   ########.fr       */
+/*   Updated: 2017/02/19 11:52:11 by schiad           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,10 @@
 
 void	ft_putllong_fd(long long n, int fd)
 {
-		if (n < 0)
-		{
-				ft_putchar_fd('-', fd);
-				n = -n;
-		}
-		ft_putdigit_fd(n, fd);
+	if (n < 0)
+	{
+		ft_putchar_fd('-', fd);
+		n = -n;
+	}
+	ft_putdigit_fd(n, fd);
 }

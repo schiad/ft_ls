@@ -6,7 +6,7 @@
 /*   By: schiad <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/18 18:48:28 by schiad            #+#    #+#             */
-/*   Updated: 2017/02/18 20:32:59 by schiad           ###   ########.fr       */
+/*   Updated: 2017/02/19 12:38:51 by schiad           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,12 +19,12 @@ int		exist_option(char *option, char *exec)
 	i = 1;
 	while (option[i])
 	{
-		if (!ft_strchr("alrsRt", option[i]))
+		if (!ft_strchr("1alrsRt", option[i]))
 		{
-			ft_putstr(exec);
-			ft_putstr(": illegal option -- ");
-			ft_putchar(option[i]);
-			ft_putstr("\nusage : ft_ls [-Ralrst] [file ...]\n");
+			ft_putstr_fd(exec, 2);
+			ft_putstr_fd(": illegal option -- ", 2);
+			ft_putchar_fd(option[i], 2);
+			ft_putstr_fd("\nusage: ft_ls [-1Ralrst] [file ...]\n", 2);
 			return (1);
 		}
 		i++;
