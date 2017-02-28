@@ -6,7 +6,7 @@
 /*   By: schiad <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/11/28 22:26:34 by schiad            #+#    #+#             */
-/*   Updated: 2015/11/28 23:42:57 by schiad           ###   ########.fr       */
+/*   Updated: 2017/02/28 18:20:08 by schiad           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,5 +19,7 @@ char	*ft_strdup(const char *s1)
 
 	if ((s2 = (char *)malloc(ft_strlen(s1) + 1)))
 		ft_strcpy(s2, s1);
+	else
+		exit(1);
 	return (s2);
 }

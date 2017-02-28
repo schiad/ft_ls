@@ -6,7 +6,7 @@
 /*   By: schiad <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/11/29 15:25:44 by schiad            #+#    #+#             */
-/*   Updated: 2015/12/01 20:53:24 by schiad           ###   ########.fr       */
+/*   Updated: 2017/02/28 18:22:10 by schiad           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ void	*ft_memalloc(size_t size)
 	void	*ptr;
 
 	if (!(ptr = malloc(sizeof(char) * size)))
-		return (NULL);
+		exit(1);
 	ft_bzero(ptr, size);
 	return (ptr);
 }

@@ -6,7 +6,7 @@
 /*   By: schiad <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/12/04 18:32:59 by schiad            #+#    #+#             */
-/*   Updated: 2015/12/04 21:17:21 by schiad           ###   ########.fr       */
+/*   Updated: 2017/02/28 18:22:50 by schiad           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ t_list	*ft_lstnew(void const *content, size_t content_size)
 
 	new = NULL;
 	if (!(new = (t_list *)malloc(sizeof(t_list) * 1)))
-		return ((void *)NULL);
+		exit(0);
 	if (content)
 	{
 		new->content = malloc(content_size);
