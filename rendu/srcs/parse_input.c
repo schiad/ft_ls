@@ -6,7 +6,7 @@
 /*   By: schiad <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/18 18:59:13 by schiad            #+#    #+#             */
-/*   Updated: 2017/02/19 13:47:32 by schiad           ###   ########.fr       */
+/*   Updated: 2017/02/28 18:01:38 by schiad           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ t_list	*parse_files(int argc, char **argv)
 		else if (!option || argv[i][0] != '-' ||
 			(argv[i][0] == '-' && argv[i][1] == '\0'))
 		{
-			tmpdir = (struct dirent *)malloc(sizeof(struct dirent));
+			tmpdir = (struct dirent *)ft_memalloc(sizeof(struct dirent));
 			ft_strcpy(tmpdir->d_name, argv[i]);
 			lstfadd(&files, tmpdir, ".");
 		}

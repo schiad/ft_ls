@@ -6,7 +6,7 @@
 /*   By: schiad <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/18 18:56:59 by schiad            #+#    #+#             */
-/*   Updated: 2017/02/19 18:16:02 by schiad           ###   ########.fr       */
+/*   Updated: 2017/02/28 18:07:59 by schiad           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,10 @@
 
 int		main(int argc, char **argv)
 {
-	t_options	*options;
+	t_options	options;
 	int			ret;
 
-	(options = (t_options *)ft_memalloc(sizeof(t_options))) ? exit() : 1;
-	ret = parse_input(argc, argv, options);
-	ft_memdel((void **)&options);
+	ret = parse_input(argc, argv, &options);
 	return (ret);
 }
 

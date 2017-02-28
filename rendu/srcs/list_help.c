@@ -6,7 +6,7 @@
 /*   By: schiad <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/02/19 13:49:30 by schiad            #+#    #+#             */
-/*   Updated: 2017/02/19 13:49:32 by schiad           ###   ########.fr       */
+/*   Updated: 2017/02/28 18:01:10 by schiad           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ int		insp_file(t_list *file, int bypass)
 		pathfile = path_join(((t_file*)tmp->content)->path,
 				((t_file*)tmp->content)->name->d_name);
 		((t_file*)tmp->content)->prop =
-			(struct stat *)malloc(sizeof(struct stat));
+			(struct stat *)ft_memalloc(sizeof(struct stat));
 		((t_file*)tmp->content)->error = 0;
 		if (lstat(pathfile, ((t_file*)tmp->content)->prop) < 0)
 			((t_file*)tmp->content)->error = 1;
@@ -69,9 +69,9 @@ void	lstfadd(t_list **files, struct dirent *file, char *path)
 
 	tmp2 = *files;
 	tmp = ft_lstnew(NULL, 0);
-	tmp->content = (t_file *)malloc(sizeof(t_file));
+	tmp->content = (t_file *)ft_memalloc(sizeof(t_file));
 	content = tmp->content;
-	content->name = (struct dirent *)malloc(sizeof(struct dirent));
+	content->name = (struct dirent *)ft_memalloc(sizeof(struct dirent));
 	ft_memcpy((void *)content->name, (void *)file, sizeof(struct dirent));
 	content->path = path;
 	content->dir = 0;
