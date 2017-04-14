@@ -103,7 +103,7 @@ void	sort_time(t_list *files, t_options *options)
 	t_file	*sort;
 
 	ok = 0;
-	while (!ok)
+	while (!ok && ((long long)files > 0))
 	{
 		ok = 1;
 		tmp = files;
