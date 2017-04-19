@@ -23,6 +23,12 @@
 #  define NSEC_F ((t_file*)tmp->next->content)->prop->st_mtimespec.tv_nsec
 # endif
 
+# if __x86_64__ || __ppc64__
+#  define CAST_PTR (long long)
+# else
+#  define CAST_PTR (long)
+# endif
+
 # include <grp.h>
 # include <pwd.h>
 # include <time.h>

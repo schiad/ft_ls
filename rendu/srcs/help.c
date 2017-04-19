@@ -74,7 +74,7 @@ void	sort_name(t_list *files, t_options *options)
 	t_file	*sort;
 
 	ok = 0;
-	while (!ok && ((long long)files > 0))
+	while (!ok && (CAST_PTR files > 0))
 	{
 		ok = 1;
 		tmp = files;
@@ -103,7 +103,7 @@ void	sort_time(t_list *files, t_options *options)
 	t_file	*sort;
 
 	ok = 0;
-	while (!ok && ((long long)files > 0))
+	while (!ok && (CAST_PTR files > 0))
 	{
 		ok = 1;
 		tmp = files;
