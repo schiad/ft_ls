@@ -26,7 +26,7 @@ SRC			= $(SRC_DIR)ft_ls.c\
 			  $(SRC_DIR)right_print.c
 
 LIBFT		= ./libft/libft.a
-LIBFT_INC	= ./libft/includes
+LIBFT_INC	= ./libft/include
 LIBFT_DIR	= ./libft
 
 all: $(NAME)
