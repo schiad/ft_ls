@@ -19,4 +19,4 @@ make
 
 # My result
 
-[102/100](ft_ls_result.png)
+![102/100](ft_ls_result.png)
