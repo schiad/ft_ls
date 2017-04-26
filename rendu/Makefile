@@ -41,6 +41,7 @@ $(NAME): libft
 libft: $(LIBFT)
 
 $(LIBFT):
+	@git submodule update --init --recursive
 	@echo "Call LIBFT to compile."
 	@make --no-print-directory -C ./libft
 
