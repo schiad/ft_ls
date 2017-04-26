@@ -16,3 +16,7 @@ make
 # Usage
 
 ./ft_ls \[-a -l -r -s -R -t\] \[path\]
+
+# My result
+
+[102/100](ft_ls_result.png)
